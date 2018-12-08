@@ -28,9 +28,10 @@
     //    [[FIXIT fix] executeScript:@"var fix = new FIXIT('RTViewController');\nvar origin = fix.fixInstanceMethod('_crash:', function(self) {\n    console.log(self);\n    console.log(arguments);\n    return \"success\";\n});\n\nconsole.log(origin);"];
     [[FIXIT fix] executeScript:JSString
      (\n
+      require('UIColor');\n
       var fix = Fixit.fix('RTViewController');\n
       var origin = fix.instanceMethod('locationOf:atIndex:defaultValue:', function(locations, index, point) {\n
-         console.log(arguments);\n
+         this.view.backgroundColor = UIColor.redColor();\n
          if (index > locations.length - 1) {\n
              return locations[locations.length - 1].CGPointValue();\n
          }\n

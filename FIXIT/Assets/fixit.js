@@ -19,6 +19,7 @@ var FIXIT, global = this;
       } else {
         return function () {
           var args = Array.prototype.slice.call(arguments);
+
           return _instanceCallMethod(this, name, args);
         }.bind(this);
       }
@@ -27,13 +28,13 @@ var FIXIT, global = this;
     enumerable: false
   });
 
-  Object.defineProperty(String.prototype, 'invoke', {
-    value: function () {
+  global.proxy = function (target) {
+    return new Proxy(target, {
+      get: _valueForKey,
+      set: _setValueForKey
+    });
+  };
 
-    },
-    configurable: false,
-    enumerable: false
-  });
 
   if (global.console) {
     var jsLogger = console.log;

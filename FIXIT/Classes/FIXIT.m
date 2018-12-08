@@ -62,7 +62,8 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     NSParameterAssert(invocation);
 
     JSValue *function = [(id)[self class] associatedJSValueForSelector:invocation.selector];
-    JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[self]] callWithArguments:invocation.fixit_arguments];
+    JSValue *proxy = [[FIXIT fix].context.globalObject[@"proxy"] callWithArguments:@[self]];
+    JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxy]] callWithArguments:invocation.fixit_arguments];
     [invocation setFixit_returnValue:returnVal];
 }
 
@@ -154,6 +155,18 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
 
         context[@"Fixit"] = [Fixit class];
 
+        context[@"_valueForKey"] = ^(JSValue *target, NSString *key) {
+            id value = [[target toObject] valueForKey:key];
+            if (value) {
+                return [[FIXIT fix].context.globalObject[@"proxy"] callWithArguments:@[value]];
+            }
+            return [JSValue valueWithUndefinedInContext:[FIXIT fix].context];
+        };
+
+        context[@"_setValueForKey"] = ^(JSValue *target, NSString *key, JSValue *value) {
+            [target.toObject setValue:value.toObject forKey:key];
+        };
+
         context[@"_instanceCallMethod"] = ^(JSValue *instance, NSString *selName, JSValue *arguments) {
             id obj = [instance toObject];
             SEL sel = NSSelectorFromString(selName);
@@ -163,6 +176,13 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
             invocation.fixit_arguments = [arguments toArray];
             [invocation invokeWithTarget:obj];
             return [invocation fixit_returnValueInContext:[FIXIT fix].context];
+        };
+
+        context[@"require"] = ^(NSString *imports) {
+            NSArray <NSString *> *clsNames = [[imports stringByReplacingOccurrencesOfString:@" " withString:@""] componentsSeparatedByString:@","];
+            [clsNames enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [FIXIT fix].context.globalObject[obj] = NSClassFromString(obj);
+            }];
         };
 
         context[@"dispatch_after"] = ^(double time, JSValue *func) {
