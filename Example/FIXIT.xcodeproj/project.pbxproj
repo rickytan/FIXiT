@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5CC634E97394ADEDBD095EC0 /* Pods_FIXIT_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB020C286D8E3CC42B0BE5EA /* Pods_FIXIT_Tests.framework */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -21,9 +20,10 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
-		70A650356C1D4F3E04E9D056 /* Pods_FIXIT_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1105AB98DA685DA69D9762DC /* Pods_FIXIT_Example.framework */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
+		948C691B148063726C4C1EFD /* libPods-FIXIT_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3CA0BF8E24892FD08394E57 /* libPods-FIXIT_Tests.a */; };
+		A6C0B2DF855089A5DEFB1973 /* libPods-FIXIT_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C8C202D49B33EB50173DA772 /* libPods-FIXIT_Example.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,11 +37,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1105AB98DA685DA69D9762DC /* Pods_FIXIT_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FIXIT_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2E24CADE79D0FC022488DAE5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		2E24CADE79D0FC022488DAE5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		2F540583587B6989DC5B79CA /* Pods-FIXIT_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Tests/Pods-FIXIT_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		3B5457119FEED7E2918959D7 /* Pods-FIXIT_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example.release.xcconfig"; sourceTree = "<group>"; };
-		529CD34A045F7D00C401BF37 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		529CD34A045F7D00C401BF37 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* FIXIT_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FIXIT_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -65,8 +64,9 @@
 		853B5AFF3145A4E3171D5A22 /* Pods-FIXIT_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9284FC269EDFF0FAF791C371 /* Pods-FIXIT_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Tests/Pods-FIXIT_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		DB020C286D8E3CC42B0BE5EA /* Pods_FIXIT_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FIXIT_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF1E2FC028D8B86EFA62A542 /* FIXIT.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = FIXIT.podspec; path = ../FIXIT.podspec; sourceTree = "<group>"; };
+		C8C202D49B33EB50173DA772 /* libPods-FIXIT_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FIXIT_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3CA0BF8E24892FD08394E57 /* libPods-FIXIT_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FIXIT_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF1E2FC028D8B86EFA62A542 /* FIXIT.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FIXIT.podspec; path = ../FIXIT.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +77,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				70A650356C1D4F3E04E9D056 /* Pods_FIXIT_Example.framework in Frameworks */,
+				A6C0B2DF855089A5DEFB1973 /* libPods-FIXIT_Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +88,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				5CC634E97394ADEDBD095EC0 /* Pods_FIXIT_Tests.framework in Frameworks */,
+				948C691B148063726C4C1EFD /* libPods-FIXIT_Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,8 +123,8 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				1105AB98DA685DA69D9762DC /* Pods_FIXIT_Example.framework */,
-				DB020C286D8E3CC42B0BE5EA /* Pods_FIXIT_Tests.framework */,
+				C8C202D49B33EB50173DA772 /* libPods-FIXIT_Example.a */,
+				F3CA0BF8E24892FD08394E57 /* libPods-FIXIT_Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -207,7 +207,7 @@
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
-				03F1E34B122DF30600EA82E1 /* [CP] Embed Pods Frameworks */,
+				F9B28C827579F8633B2AD613 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -294,28 +294,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		03F1E34B122DF30600EA82E1 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/FIXIT/FIXIT.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FIXIT.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		127AB609E89B30AC1E2ED479 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -358,6 +336,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F9B28C827579F8633B2AD613 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example-resources.sh",
+				"${PODS_ROOT}/../../FIXIT/Assets/fixit.js",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fixit.js",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -452,7 +452,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -485,7 +485,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

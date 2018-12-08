@@ -31,10 +31,7 @@ TODO: Add long description of the pod here.
   s.ios.deployment_target = '8.0'
 
   s.source_files = 'FIXIT/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'FIXIT' => ['FIXIT/Assets/*.png']
-  # }
+  s.resources = 'FIXIT/Assets/*.js'
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
