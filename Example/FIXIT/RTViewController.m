@@ -24,9 +24,10 @@
 
     // Do any additional setup after loading the view, typically from a nib.
 //    [[FIXIT fix] executeScript:@"var fix = new FIXIT('RTViewController');\nvar origin = fix.fixInstanceMethod('_crash:', function(self) {\n    console.log(self);\n    console.log(arguments);\n    return \"success\";\n});\n\nconsole.log(origin);"];
-    [[FIXIT fix] executeScript:@"var fix = Fixit.fix('RTViewController');\nvar origin = fix.instanceMethod('locationOf:atIndex:', function(self, locations, index) {\n    console.log(arguments);\n    if (index > locations.length) {\n        return locations[locations.length - 1].CGPointValue();\n    }\n    return origin.invoke(self);\n});"];
+    [[FIXIT fix] executeScript:@"var fix = Fixit.fix('RTViewController');\nvar origin = fix.instanceMethod('locationOf:atIndex:defaultValue:', function(self, locations, index, point) {\n    console.log(self.title(), point.CGPointValue());\n    if (index > locations.length) {\n        return locations[locations.length - 1].CGPointValue();\n    }\n    return locations[index];\n});"];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"%@", NSStringFromCGPoint([self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 0.89)]] atIndex:0]));
+        id p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 0.89)]] atIndex:2 defaultValue:CGPointMake(0.5, 1.25)];
+        NSLog(@"%@", p);
     });
 }
 
@@ -42,9 +43,9 @@
     return [NSString stringWithFormat:@"fail: %@", lastName];
 }
 
-- (CGPoint)locationOf:(NSArray <NSValue *> *)locations atIndex:(NSInteger)index
+- (id)locationOf:(NSArray <NSValue *> *)locations atIndex:(NSInteger)index defaultValue:(CGPoint)point
 {
-    return [locations[index] CGPointValue];
+    return locations[index];
 }
 
 @end

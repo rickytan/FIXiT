@@ -5,10 +5,11 @@
 //  Created by ricky on 2018/12/8.
 //
 
-#import <JavaScriptCore/JavaScriptCore.h>
 #import <objc/runtime.h>
+#import <objc/message.h>
 
 #import "FIXIT.h"
+#import "NSInvocation+FIXIT.h"
 
 @protocol Fixit <JSExport>
 + (instancetype)fix:(NSString *)clsName;
@@ -21,6 +22,49 @@ JSExportAs(classMethod, - (NSString *)fixClassMethod:(NSString *)selName usingBl
 @interface Fixit : NSObject <Fixit>
 @property (nonatomic, unsafe_unretained) Class cls;
 @end
+
+@interface NSObject (FIXIT)
+@property (atomic, strong, readonly) NSMutableDictionary <NSString *, JSValue *> * fixit_associatedJSValue;
+
+- (JSValue *)associatedJSValueForSelector:(SEL)selector;
+- (void)setAssociatedJSValue:(JSValue *)value forSelector:(SEL)selector;
+@end
+
+@implementation NSObject (FIXIT)
+
+- (NSMutableDictionary<NSString *, JSValue *> *)fixit_associatedJSValue
+{
+    @synchronized (self) {
+        NSMutableDictionary<NSString *, JSValue *> * dict = objc_getAssociatedObject(self, @selector(fixit_associatedJSValue));
+        if (!dict) {
+            dict = [NSMutableDictionary dictionary];
+            objc_setAssociatedObject(self, @selector(fixit_associatedJSValue), dict, OBJC_ASSOCIATION_RETAIN);
+        }
+        return dict;
+    }
+    return nil;
+}
+
+- (JSValue *)associatedJSValueForSelector:(SEL)selector
+{
+    return self.fixit_associatedJSValue[NSStringFromSelector(selector)];
+}
+
+- (void)setAssociatedJSValue:(JSValue *)value forSelector:(SEL)selector
+{
+    self.fixit_associatedJSValue[NSStringFromSelector(selector)] = value;
+}
+
+@end
+
+static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvocation *invocation) {
+    NSParameterAssert(self);
+    NSParameterAssert(invocation);
+
+    JSValue *function = [(id)[self class] associatedJSValueForSelector:invocation.selector];
+    NSArray *args = @[self];
+    [function callWithArguments:[args arrayByAddingObjectsFromArray:invocation.fixit_arguments]];
+}
 
 @implementation Fixit
 
@@ -43,112 +87,32 @@ JSExportAs(classMethod, - (NSString *)fixClassMethod:(NSString *)selName usingBl
     Class cls = self.cls;
     SEL sel = NSSelectorFromString(selName);
     Method met = class_getInstanceMethod(cls, sel);
-    NSMethodSignature *sig = [cls instanceMethodSignatureForSelector:sel];
     IMP imp = [cls instanceMethodForSelector:sel];
 
-    SEL newSel = sel_registerName([NSString stringWithFormat:@"__fixit_%@_%p", selName, block].UTF8String);
-    IMP newImp = imp_implementationWithBlock(^(id self, ...) {
-        va_list args;
-        va_start(args, self);
-
-        NSUInteger numberOfArgs = sig.numberOfArguments;
-
-        NSMutableArray *arguments = [NSMutableArray arrayWithCapacity:numberOfArgs - 1];
-        [arguments addObject:self];
-
-        for (NSUInteger i = 2; i < numberOfArgs; ++i) {
-            const char * type = [sig getArgumentTypeAtIndex:i];
-            switch (type[0]) {
-                case 'c':
-                case 'i':
-                case 's':
-                case 'l':
-                {
-                    int32_t value = va_arg(args, int32_t);
-                    [arguments addObject:@(value)];
-                }
-                    break;
-                case 'B':
-                case 'C':
-                case 'I':
-                case 'S':
-                case 'L':
-                {
-                    uint32_t value = va_arg(args, uint32_t);
-                    [arguments addObject:@(value)];
-                }
-                    break;
-                case 'f':case 'd':
-                {
-                    double value = va_arg(args, double);
-                    [arguments addObject:@(value)];
-                }
-                    break;
-                case 'q':
-                {
-                    long long value = va_arg(args, long long);
-                    [arguments addObject:@(value)];
-                }
-                    break;
-                case 'Q':
-                {
-                    unsigned long long value = va_arg(args, unsigned long long);
-                    [arguments addObject:@(value)];
-                }
-                    break;
-                case '*':
-                {
-                    char * value = va_arg(args, char *);
-                    if (value) {
-                        [arguments addObject:[JSValue valueWithObject:[[NSString alloc] initWithUTF8String:value] inContext:[JSContext currentContext]]];
-                    }
-                    else {
-                        [arguments addObject:[NSNull null]];
-                    }
-                }
-                    break;
-                case '@':case '#':
-                {
-                    id value = va_arg(args, id);
-                    if (value) {
-                        [arguments addObject:value];
-                    }
-                    else {
-                        [arguments addObject:[NSNull null]];
-                    }
-                }
-                    break;
-                case '{':
-                {
-                    if (strcmp(type, @encode(CGPoint)) == 0) {
-                        CGPoint value = va_arg(args, CGPoint);
-                        [arguments addObject:[JSValue valueWithPoint:value inContext:[JSContext currentContext]]];
-                    } else if (strcmp(type, @encode(CGSize))) {
-                        CGSize value = va_arg(args, CGSize);
-                        [arguments addObject:[JSValue valueWithSize:value inContext:[JSContext currentContext]]];
-                    } else if (strcmp(type, @encode(CGRect))) {
-                        CGRect value = va_arg(args, CGRect);
-                        [arguments addObject:[JSValue valueWithRect:value inContext:[JSContext currentContext]]];
-                    } else if (strcmp(type, @encode(NSRange))) {
-                        NSRange value = va_arg(args, NSRange);
-                        [arguments addObject:[JSValue valueWithRange:value inContext:[JSContext currentContext]]];
-                    } else {
-                        [arguments addObject:[JSValue valueWithUndefinedInContext:[JSContext currentContext]]];
-                    }
-                    break;
-                }
-                default:
-                    [arguments addObject:[JSValue valueWithUndefinedInContext:[JSContext currentContext]]];
-                    break;
-            }
-        }
-        va_end(args);
-
-        return [block callWithArguments:arguments];
-    });
-    if (class_addMethod(cls, newSel, newImp, method_getTypeEncoding(met))) {
-        method_exchangeImplementations(met, class_getInstanceMethod(cls, newSel));
+    SEL newSel = NSSelectorFromString([NSString stringWithFormat:@"__fixit_%@_%p", selName, block]);
+    IMP forwardIMP = _objc_msgForward;
+#ifndef __arm64
+    if ([sig.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
+        forwardIMP = _objc_msgForward_stret;
     }
+#endif
+
+    if (![cls instancesRespondToSelector:newSel]) {
+        if (class_addMethod(cls, newSel, forwardIMP, method_getTypeEncoding(met))) {
+            method_exchangeImplementations(met, class_getInstanceMethod(cls, newSel));
+        }
+    }
+
+    if ([cls instanceMethodForSelector:@selector(forwardInvocation:)] != (IMP)__FIXIT_FORWARDING__) {
+        Method forward = class_getInstanceMethod(cls, @selector(forwardInvocation:));
+        IMP invokeIMP = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)__FIXIT_FORWARDING__, method_getTypeEncoding(forward));
+        if (invokeIMP) {
+            class_addMethod(cls, NSSelectorFromString(@"__fixit_forwardInvocation:"), invokeIMP, method_getTypeEncoding(forward));
+        }
+    }
+
+    [cls setAssociatedJSValue:block forSelector:sel];
+
     return [NSString stringWithFormat:@"%p", imp];
 }
 
@@ -188,28 +152,15 @@ JSExportAs(classMethod, - (NSString *)fixClassMethod:(NSString *)selName usingBl
 
         context[@"Fixit"] = [Fixit class];
 
-        context[@"_fixit_im"] = ^(NSString *clsName, NSString *selName, JSValue *function) {
-            Class cls = NSClassFromString(clsName);
+        context[@"_instanceCallMethod"] = ^(JSValue *instance, NSString *selName, NSArray<JSValue *> *arguments) {
+            id obj = [instance toObject];
             SEL sel = NSSelectorFromString(selName);
-            Method met = class_getInstanceMethod(cls, sel);
-            const char *typeEncoding = method_getTypeEncoding(met);
-            IMP imp = [cls instanceMethodForSelector:sel];
 
-            SEL newSel = sel_registerName([NSString stringWithFormat:@"__fixit_%@_%p", selName, function].UTF8String);
-            IMP newImp = imp_implementationWithBlock(^(id self, ...) {
-                va_list args;
-                va_start(args, self);
-                NSUInteger size, align;
-                NSGetSizeAndAlignment(typeEncoding, &size, &align);
-                return [function callWithArguments:[JSContext currentArguments]];
-            });
-            if (class_addMethod(cls, newSel, newImp, method_getTypeEncoding(met))) {
-                method_exchangeImplementations(met, class_getInstanceMethod(cls, newSel));
-            }
-            return [NSString stringWithFormat:@"%p", imp];
-        };
-        context[@"__fixit_cm"] = ^(NSString *clsName, NSString *selName, JSValue *function) {
-
+            NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[obj methodSignatureForSelector:sel]];
+            invocation.selector = sel;
+            invocation.fixit_arguments = arguments;
+            [invocation invokeWithTarget:obj];
+            return [invocation fixit_returnValueInContext:[FIXIT fix].context];
         };
 
         context[@"dispatch_after"] = ^(double time, JSValue *func) {

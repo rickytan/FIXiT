@@ -17,14 +17,24 @@ var FIXIT, global = this;
       if (this[name] instanceof Function) {
         return this[name].bind(this);
       } else {
-        return function() {
-          
-        };
+        return function () {
+          var args = Array.prototype.slice.call(arguments);
+          return _instanceCallMethod(this, name, args);
+        }.bind(this);
       }
     },
     configurable: false,
     enumerable: false
   });
+
+  Object.defineProperty(String.prototype, 'invoke', {
+    value: function () {
+
+    },
+    configurable: false,
+    enumerable: false
+  });
+
   if (global.console) {
     var jsLogger = console.log;
     global.console.log = function () {
