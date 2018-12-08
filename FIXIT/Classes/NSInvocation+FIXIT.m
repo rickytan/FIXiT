@@ -178,7 +178,7 @@
     } else if (strcmp(argType, @encode(short)) == 0) {
         WRAP_AND_RETURN(short, Int32);
     } else if (strcmp(argType, @encode(long)) == 0) {
-#if __arm64
+#if __arm64__ || __x86_64__
         WRAP_AND_RETURN(long, Double);
 #else
         WRAP_AND_RETURN(long, Int32);
@@ -192,7 +192,7 @@
     } else if (strcmp(argType, @encode(unsigned short)) == 0) {
         WRAP_AND_RETURN(unsigned short, UInt32);
     } else if (strcmp(argType, @encode(unsigned long)) == 0) {
-#if __arm64
+#if __arm64__ || __x86_64__
         WRAP_AND_RETURN(unsigned long, Double);
 #else
         WRAP_AND_RETURN(unsigned long, UInt32);
@@ -215,10 +215,6 @@
         __unsafe_unretained id block = nil;
         [self getArgument:&block atIndex:(NSInteger)index];
         return [JSValue valueWithObject:[block copy] inContext:context];
-    } else if (strcmp(argType, @encode(CGPoint)) == 0) {
-        CGPoint val = {0};
-        [self getReturnValue:&val];
-        return [JSValue valueWithPoint:val inContext:context];
     } else {
         NSUInteger valueSize = 0;
         NSGetSizeAndAlignment(argType, &valueSize, NULL);
@@ -230,6 +226,72 @@
     }
     return [JSValue valueWithUndefinedInContext:context];
 #undef WRAP_AND_RETURN
+}
+
+- (void)setFixit_returnValue:(JSValue *)value
+{
+    const char *argType = self.methodSignature.methodReturnType;
+    // Skip const type qualifier.
+    if (argType[0] == _C_CONST) argType++;
+#define READ_ANS_SET(type, method) do { type val = [value method]; [self setReturnValue:&val]; } while (0)
+    if (strcmp(argType, @encode(id)) == 0 || strcmp(argType, @encode(Class)) == 0) {
+        __autoreleasing id returnObj = value.toObject;
+        [self setReturnValue:&returnObj];
+    } else if (strcmp(argType, @encode(SEL)) == 0) {
+        SEL selector = NSSelectorFromString(value.toString);
+        [self setReturnValue:&selector];
+    } else if (strcmp(argType, @encode(Class)) == 0) {
+        __autoreleasing Class theClass = value.toObject;
+        [self setReturnValue:&theClass];
+        // Using this list will box the number with the appropriate constructor, instead of the generic NSValue.
+    } else if (strcmp(argType, @encode(char)) == 0) {
+        READ_ANS_SET(char, toInt32);
+    } else if (strcmp(argType, @encode(int)) == 0) {
+        READ_ANS_SET(int, toInt32);
+    } else if (strcmp(argType, @encode(short)) == 0) {
+        READ_ANS_SET(short, toInt32);
+    } else if (strcmp(argType, @encode(long)) == 0) {
+        READ_ANS_SET(long, toInt32);
+    } else if (strcmp(argType, @encode(long long)) == 0) {
+        READ_ANS_SET(long long, toDouble);
+    } else if (strcmp(argType, @encode(unsigned char)) == 0) {
+        READ_ANS_SET(unsigned char, toUInt32);
+    } else if (strcmp(argType, @encode(unsigned int)) == 0) {
+        READ_ANS_SET(unsigned int, toUInt32);
+    } else if (strcmp(argType, @encode(unsigned short)) == 0) {
+        READ_ANS_SET(unsigned short, toUInt32);
+    } else if (strcmp(argType, @encode(unsigned long)) == 0) {
+        READ_ANS_SET(unsigned long, toUInt32);
+    } else if (strcmp(argType, @encode(unsigned long long)) == 0) {
+        READ_ANS_SET(unsigned long long, toDouble);
+    } else if (strcmp(argType, @encode(float)) == 0) {
+        READ_ANS_SET(float, toDouble);
+    } else if (strcmp(argType, @encode(double)) == 0) {
+        READ_ANS_SET(double, toDouble);
+    } else if (strcmp(argType, @encode(BOOL)) == 0) {
+        READ_ANS_SET(BOOL, toBool);
+    } else if (strcmp(argType, @encode(bool)) == 0) {
+        READ_ANS_SET(BOOL, toBool);
+    } else if (strcmp(argType, @encode(char *)) == 0) {
+        const char * str = [[value toObject] pointerValue];
+        [self setReturnValue:&str];
+    } else if (strcmp(argType, @encode(void (^)(void))) == 0) {
+        __unsafe_unretained id block = nil;
+        [self setReturnValue:&block];
+    } else {
+        NSUInteger valueSize = 0;
+        NSGetSizeAndAlignment(argType, &valueSize, NULL);
+        NSValue *val = [value toObjectOfClass:[NSValue class]];
+        unsigned char valueBytes[valueSize];
+        if (@available(iOS 11.0, *)) {
+            [val getValue:valueBytes size:valueSize];
+        } else {
+            // Fallback on earlier versions
+            [val getValue:valueBytes];
+        }
+        [self setReturnValue:&valueBytes];
+    }
+#undef READ_ANS_SET
 }
 
 @end

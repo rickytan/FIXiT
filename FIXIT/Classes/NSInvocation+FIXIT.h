@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSInvocation (FIXIT)
 @property (nonatomic, strong) NSArray *fixit_arguments;
 - (JSValue *)fixit_returnValueInContext:(JSContext *)context;
+- (void)setFixit_returnValue:(JSValue *)value;
 @end
 
 NS_ASSUME_NONNULL_END

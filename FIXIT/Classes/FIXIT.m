@@ -62,8 +62,8 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     NSParameterAssert(invocation);
 
     JSValue *function = [(id)[self class] associatedJSValueForSelector:invocation.selector];
-    NSArray *args = @[self];
-    [function callWithArguments:[args arrayByAddingObjectsFromArray:invocation.fixit_arguments]];
+    JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[self]] callWithArguments:invocation.fixit_arguments];
+    [invocation setFixit_returnValue:returnVal];
 }
 
 @implementation Fixit
@@ -91,7 +91,8 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
 
     SEL newSel = NSSelectorFromString([NSString stringWithFormat:@"__fixit_%@_%p", selName, block]);
     IMP forwardIMP = _objc_msgForward;
-#ifndef __arm64
+#ifndef __arm64__
+    NSMethodSignature *sig = [cls instanceMethodSignatureForSelector:sel];
     if ([sig.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
         forwardIMP = _objc_msgForward_stret;
     }
@@ -103,11 +104,12 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
         }
     }
 
-    if ([cls instanceMethodForSelector:@selector(forwardInvocation:)] != (IMP)__FIXIT_FORWARDING__) {
+    if (class_getMethodImplementation(cls, @selector(forwardInvocation:)) != (IMP)__FIXIT_FORWARDING__) {
         Method forward = class_getInstanceMethod(cls, @selector(forwardInvocation:));
-        IMP invokeIMP = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)__FIXIT_FORWARDING__, method_getTypeEncoding(forward));
+        const char *encoding = method_getTypeEncoding(forward);
+        IMP invokeIMP = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)__FIXIT_FORWARDING__, encoding);
         if (invokeIMP) {
-            class_addMethod(cls, NSSelectorFromString(@"__fixit_forwardInvocation:"), invokeIMP, method_getTypeEncoding(forward));
+            class_addMethod(cls, NSSelectorFromString(@"__fixit_forwardInvocation:"), invokeIMP, encoding);
         }
     }
 
@@ -152,13 +154,13 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
 
         context[@"Fixit"] = [Fixit class];
 
-        context[@"_instanceCallMethod"] = ^(JSValue *instance, NSString *selName, NSArray<JSValue *> *arguments) {
+        context[@"_instanceCallMethod"] = ^(JSValue *instance, NSString *selName, JSValue *arguments) {
             id obj = [instance toObject];
             SEL sel = NSSelectorFromString(selName);
 
             NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[obj methodSignatureForSelector:sel]];
             invocation.selector = sel;
-            invocation.fixit_arguments = arguments;
+            invocation.fixit_arguments = [arguments toArray];
             [invocation invokeWithTarget:obj];
             return [invocation fixit_returnValueInContext:[FIXIT fix].context];
         };
