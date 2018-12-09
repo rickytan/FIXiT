@@ -33,6 +33,7 @@
       var fix = Fixit.fix('RTViewController');\n
       var origin = fix.instanceMethod('locationOf:atIndex:defaultValue:', function(locations, index, point) {\n
          this.view.backgroundColor = UIColor.redColor();\n
+         this.button['setTitle:forState:']('test_title', 0);\n
          if (index > locations.length - 1) {\n
              return locations[locations.length - 1].CGPointValue();\n
          }\n
