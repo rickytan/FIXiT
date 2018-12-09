@@ -16,11 +16,22 @@ var global = this;
     enumerable: false
   });
 
-  global.proxy = function (target) {
-    return new Proxy(target, {
-      get: _valueForKey,
-      set: _setValueForKey
-    });
+  global.proxyFunction = function (target, method) {
+    return function () {
+      var args = Array.prototype.slice.call(arguments);
+      return _instanceCallMethod(target, method, args);
+    };
+  };
+
+  var _handler = {
+    get: function (target, key) {
+      return new Proxy(_valueForKey.apply(this, arguments), _handler);
+    },
+    set: _setValueForKey
+  };
+
+  global.proxyObject = function (target) {
+    return new Proxy(target, _handler);
   };
 
 
@@ -31,11 +42,11 @@ var global = this;
       if (jsLogger) {
         jsLogger.apply(global.console, arguments);
       }
-    }
+    };
   } else {
     global.console = {
       log: global._OC_log
-    }
+    };
   }
 
   global.YES = true;

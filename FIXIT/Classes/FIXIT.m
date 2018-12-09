@@ -62,7 +62,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     NSParameterAssert(invocation);
 
     JSValue *function = [(id)[self class] associatedJSValueForSelector:invocation.selector];
-    JSValue *proxy = [[FIXIT fix].context.globalObject[@"proxy"] callWithArguments:@[self]];
+    JSValue *proxy = [[FIXIT fix].context.globalObject[@"proxyObject"] callWithArguments:@[self]];
     JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxy]] callWithArguments:invocation.fixit_arguments];
     [invocation setFixit_returnValue:returnVal];
 }
@@ -156,11 +156,23 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
         context[@"Fixit"] = [Fixit class];
 
         context[@"_valueForKey"] = ^(JSValue *target, NSString *key) {
-            id value = [[target toObject] valueForKey:key];
-            if (value) {
-                return [[FIXIT fix].context.globalObject[@"proxy"] callWithArguments:@[value]];
+            id object = target.toObject;
+            SEL sel = NSSelectorFromString(key);
+            if ([object respondsToSelector:sel]) {
+                NSMethodSignature *sig = [object methodSignatureForSelector:sel];
+                if (sig.numberOfArguments <= 2) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                    return [object performSelector:sel];
+#pragma clang diagnostic pop
+                } else {
+                    return (id)[[JSContext currentContext].globalObject[@"proxyFunction"] callWithArguments:@[target, key]];
+                }
+            } else {
+                id value = [[target toObject] valueForKey:key];
+                return value;
             }
-            return [JSValue valueWithUndefinedInContext:[FIXIT fix].context];
+            return (id)nil;
         };
 
         context[@"_setValueForKey"] = ^(JSValue *target, NSString *key, JSValue *value) {
