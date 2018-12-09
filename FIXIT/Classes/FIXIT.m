@@ -57,13 +57,38 @@ JSExportAs(classMethod, - (NSString *)fixClassMethod:(NSString *)selName usingBl
 
 @end
 
+static id wrapObjCWithProxiedObject(id object) {
+//    return object;
+    if ([object isKindOfClass:[NSArray class]]) {
+        NSMutableArray *arr = [NSMutableArray arrayWithCapacity:[object count]];
+        [object enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [arr addObject:wrapObjCWithProxiedObject(obj)];
+        }];
+        return [arr copy];
+    } else if ([object isKindOfClass:[NSDictionary class]]) {
+        NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithCapacity:[object count]];
+        [object enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            dic[key] = wrapObjCWithProxiedObject(obj);
+        }];
+        return [dic copy];
+    } else if ([object isKindOfClass:[NSNumber class]]) {
+        return object;
+    } else if ([object isKindOfClass:[NSString class]]) {
+        return object;
+    } else if ([object isKindOfClass:[NSDate class]]) {
+        return object;
+    } else {
+        return [[FIXIT context].globalObject[@"makeProxiedObject"] callWithArguments:@[object ?: [NSNull null]]];
+    }
+}
+
 static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvocation *invocation) {
     NSParameterAssert(self);
     NSParameterAssert(invocation);
 
     JSValue *function = [(id)[self class] associatedJSValueForSelector:invocation.selector];
-    JSValue *proxy = [[FIXIT fix].context.globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
-    JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxy]] callWithArguments:invocation.fixit_arguments];
+    JSValue *proxySelf = [[FIXIT context].globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
+    JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxySelf]] callWithArguments:wrapObjCWithProxiedObject(invocation.fixit_arguments)];
     [invocation setFixit_returnValue:returnVal];
 }
 
@@ -114,7 +139,8 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
         }
     }
 
-    [cls setAssociatedJSValue:block forSelector:sel];
+    [cls setAssociatedJSValue:[[FIXIT context].globalObject[@"unproxyFunction"] callWithArguments:@[block]]
+                  forSelector:sel];
 
     return [NSString stringWithFormat:@"%p", imp];
 }
@@ -134,7 +160,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
     invocation.selector = sel;
     invocation.fixit_arguments = [arguments toArray];
     [invocation invokeWithTarget:obj];
-    return [invocation fixit_returnValueInContext:[FIXIT fix].context];
+    return [invocation fixit_returnValueInContext:[FIXIT context]];
 }
 
 @interface FIXIT ()
@@ -153,12 +179,22 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
     return _instance;
 }
 
++ (JSContext *)context
+{
+    static dispatch_once_t onceToken;
+    static JSContext * _context = nil;
+    dispatch_once(&onceToken, ^{
+        JSVirtualMachine *machine = [[JSVirtualMachine alloc] init];
+        _context = [[JSContext alloc] initWithVirtualMachine:machine];
+    });
+    return _context;
+}
+
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        JSVirtualMachine *machine = [[JSVirtualMachine alloc] init];
-        JSContext * context = [[JSContext alloc] initWithVirtualMachine:machine];
+        JSContext * context = [self.class context];
         context.name = @"FIXIT";
         context.exceptionHandler = ^(JSContext *context, JSValue *exception) {
             NSLog(@"%@: %@", context, exception);
@@ -177,7 +213,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
                     id value = [object performSelector:sel];
 #pragma clang diagnostic pop
                     if (sig.methodReturnType[0] != _C_VOID) {
-                        return [[JSContext currentContext].globalObject[@"makeProxiedObject"] callWithArguments:@[value ?: [NSNull null]]];
+                        return [[JSContext currentContext].globalObject[@"makeProxiedObject"] callWithArguments:@[@(value) ?: [NSNull null]]];
                     } else {
                         return [JSValue valueWithUndefinedInContext:[JSContext currentContext]];
                     }
@@ -205,7 +241,8 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
         context[@"require"] = ^(NSString *imports) {
             NSArray <NSString *> *clsNames = [[imports stringByReplacingOccurrencesOfString:@" " withString:@""] componentsSeparatedByString:@","];
             [clsNames enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                [FIXIT fix].context.globalObject[obj] = NSClassFromString(obj);
+                JSContext *ctx = [JSContext currentContext];
+                ctx.globalObject[obj] = [ctx.globalObject[@"makeProxiedObject"] callWithArguments:@[NSClassFromString(obj)]];
             }];
         };
 
@@ -291,7 +328,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
 
 - (void)executeScript:(NSString *)script
 {
-    NSString *jsCode = [NSString stringWithFormat:@"!function() {\ntry {\n%@\n} catch (e) {\n    console.log(e);\n}\n}();", [self _compile:script]];
+    NSString *jsCode = [NSString stringWithFormat:@"!function() {\ntry {\n%@\n} catch (e) {\n    console.log(e);\n}\n}();", script];
     [_context evaluateScript:jsCode withSourceURL:[NSURL URLWithString:@"main.js"]];
 }
 

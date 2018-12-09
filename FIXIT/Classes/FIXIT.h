@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FIXIT : NSObject
 + (instancetype)fix;
-- (JSContext *)context;
++ (JSContext *)context;
 - (void)executeScript:(NSString *)script;
 @end
 
