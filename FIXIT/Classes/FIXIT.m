@@ -237,6 +237,22 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
             });
         };
 
+        context[@"CGRectMake"] = ^(JSValue *x, JSValue *y, JSValue *width, JSValue *height) {
+            return [NSValue valueWithCGRect:CGRectMake(x.toDouble, y.toDouble, width.toDouble, height.toDouble)];
+        };
+
+        context[@"CGPointMake"] = ^(JSValue *x, JSValue *y) {
+            return [NSValue valueWithCGPoint:CGPointMake(x.toDouble, y.toDouble)];
+        };
+
+        context[@"CGSize"] = ^(JSValue *width, JSValue *height) {
+            return [NSValue valueWithCGSize:CGSizeMake(width.toDouble, height.toDouble)];
+        };
+
+        context[@"NSMakeRange"] = ^(JSValue *location, JSValue *length) {
+            return [NSValue valueWithRange:NSMakeRange(location.toUInt32, length.toUInt32)];
+        };
+
         context[@"_OC_log"] = ^() {
             NSArray *args = [JSContext currentArguments];
             for (JSValue *val in args) {
