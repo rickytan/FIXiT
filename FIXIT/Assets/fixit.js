@@ -1,17 +1,5 @@
-var FIXIT, global = this;
+var global = this;
 (function () {
-  FIXIT = function (cls) {
-    this.clsName = cls;
-  };
-
-  FIXIT.prototype.fixInstanceMethod = function (sel, func) {
-    return _fixit_im(this.clsName, sel, func);
-  };
-
-  FIXIT.prototype.fixClassMethod = function (sel, func) {
-    return __fixit_cm(this.clsName, sel, func);
-  };
-
   Object.defineProperty(Object.prototype, '_c', {
     value: function (name) {
       if (this[name] instanceof Function) {
@@ -37,26 +25,43 @@ var FIXIT, global = this;
 
   global.makeProxiedObject = function (target) {
     return new Proxy(target, {
-      get: _valueForKey,
-      set: _setValueForKey
+      get: function (target, key) {
+        if (key === '__target__') {
+          return target;
+        } else if (key === '__proto__') {
+          return Object.prototype;
+        }
+        return _valueForKey(target, key);
+      },
+      set: _setValueForKey,
+      apply: function (target, thisArg, arguments) {
+        return this;
+      }
     });
   };
 
-
-  if (global.console) {
-    var jsLogger = console.log;
-    global.console.log = function () {
-      global._OC_log.apply(global, arguments);
-      if (jsLogger) {
-        jsLogger.apply(global.console, arguments);
-      }
-    }
-  } else {
-    global.console = {
-      log: global._OC_log
-    }
-  }
-
+  global.unproxyFunction = function (func) {
+    return function () {
+      var val = func.apply(this, arguments);
+      console.log('called func', val);
+      return (val && val.__target__) || val;
+    };
+  };
+  /*
+   if (global.console) {
+   var jsLogger = console.log;
+   global.console.log = function () {
+   global._OC_log.apply(global, arguments);
+   if (jsLogger) {
+   jsLogger.apply(global.console, arguments);
+   }
+   }
+   } else {
+   global.console = {
+   log: global._OC_log
+   }
+   }
+   */
   global.YES = true;
   global.NO = false;
 }());
