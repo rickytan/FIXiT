@@ -25,7 +25,6 @@
     self.title = @"Text VC";
 
     // Do any additional setup after loading the view, typically from a nib.
-    //    [[FIXIT fix] executeScript:@"var fix = new FIXIT('RTViewController');\nvar origin = fix.fixInstanceMethod('_crash:', function(self) {\n    console.log(self);\n    console.log(arguments);\n    return \"success\";\n});\n\nconsole.log(origin);"];
     [[FIXIT fix] executeScript:JSString
      (\n
       require('UIColor');\n

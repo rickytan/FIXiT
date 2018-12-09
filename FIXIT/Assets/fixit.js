@@ -1,17 +1,5 @@
-var FIXIT, global = this;
+var global = this;
 (function () {
-  FIXIT = function (cls) {
-    this.clsName = cls;
-  };
-
-  FIXIT.prototype.fixInstanceMethod = function (sel, func) {
-    return _fixit_im(this.clsName, sel, func);
-  };
-
-  FIXIT.prototype.fixClassMethod = function (sel, func) {
-    return __fixit_cm(this.clsName, sel, func);
-  };
-
   Object.defineProperty(Object.prototype, '_c', {
     value: function (name) {
       if (this[name] instanceof Function) {
