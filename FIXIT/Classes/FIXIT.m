@@ -62,7 +62,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     NSParameterAssert(invocation);
 
     JSValue *function = [(id)[self class] associatedJSValueForSelector:invocation.selector];
-    JSValue *proxy = [[FIXIT fix].context.globalObject[@"proxy"] callWithArguments:@[self]];
+    JSValue *proxy = [[FIXIT fix].context.globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
     JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxy]] callWithArguments:invocation.fixit_arguments];
     [invocation setFixit_returnValue:returnVal];
 }
@@ -126,6 +126,17 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
 
 @end
 
+static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValue *arguments) {
+    id obj = instance.toObject;
+    SEL sel = NSSelectorFromString(selName);
+
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[obj methodSignatureForSelector:sel]];
+    invocation.selector = sel;
+    invocation.fixit_arguments = [arguments toArray];
+    [invocation invokeWithTarget:obj];
+    return [invocation fixit_returnValueInContext:[FIXIT fix].context];
+}
+
 @interface FIXIT ()
 @property (nonatomic, strong) JSContext *context;
 @end
@@ -156,26 +167,39 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
         context[@"Fixit"] = [Fixit class];
 
         context[@"_valueForKey"] = ^(JSValue *target, NSString *key) {
-            id value = [[target toObject] valueForKey:key];
-            if (value) {
-                return [[FIXIT fix].context.globalObject[@"proxy"] callWithArguments:@[value]];
+            id object = target.toObject;
+            SEL sel = NSSelectorFromString(key);
+            if ([object respondsToSelector:sel]) {
+                NSMethodSignature *sig = [object methodSignatureForSelector:sel];
+                if (sig.numberOfArguments <= 2) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                    id value = [object performSelector:sel];
+#pragma clang diagnostic pop
+                    if (sig.methodReturnType[0] != _C_VOID) {
+                        return [[JSContext currentContext].globalObject[@"makeProxiedObject"] callWithArguments:@[value ?: [NSNull null]]];
+                    } else {
+                        return [JSValue valueWithUndefinedInContext:[JSContext currentContext]];
+                    }
+                } else {
+                    return [[JSContext currentContext].globalObject[@"makeProxiedFunction"] callWithArguments:@[target, key]];
+                }
+            } else {
+                id value = [object valueForKey:key];
+                return [[JSContext currentContext].globalObject[@"makeProxiedObject"] callWithArguments:@[value ?: [NSNull null]]];
             }
-            return [JSValue valueWithUndefinedInContext:[FIXIT fix].context];
+            return [JSValue valueWithUndefinedInContext:[JSContext currentContext]];
         };
 
         context[@"_setValueForKey"] = ^(JSValue *target, NSString *key, JSValue *value) {
-            [target.toObject setValue:value.toObject forKey:key];
+            id object = target.toObject;
+            if (object != [NSNull null]) {
+                [object setValue:value.toObject forKey:key];
+            }
         };
 
         context[@"_instanceCallMethod"] = ^(JSValue *instance, NSString *selName, JSValue *arguments) {
-            id obj = [instance toObject];
-            SEL sel = NSSelectorFromString(selName);
-
-            NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[obj methodSignatureForSelector:sel]];
-            invocation.selector = sel;
-            invocation.fixit_arguments = [arguments toArray];
-            [invocation invokeWithTarget:obj];
-            return [invocation fixit_returnValueInContext:[FIXIT fix].context];
+            return instanceCallMethod(instance, selName, arguments);
         };
 
         context[@"require"] = ^(NSString *imports) {

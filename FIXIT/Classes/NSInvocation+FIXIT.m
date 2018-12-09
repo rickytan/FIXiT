@@ -215,7 +215,7 @@
         __unsafe_unretained id block = nil;
         [self getArgument:&block atIndex:(NSInteger)index];
         return [JSValue valueWithObject:[block copy] inContext:context];
-    } else {
+    } else if (argType[0] != _C_VOID) {
         NSUInteger valueSize = 0;
         NSGetSizeAndAlignment(argType, &valueSize, NULL);
 
@@ -278,7 +278,7 @@
     } else if (strcmp(argType, @encode(void (^)(void))) == 0) {
         __unsafe_unretained id block = nil;
         [self setReturnValue:&block];
-    } else {
+    } else if (argType[0] != _C_VOID) {
         NSUInteger valueSize = 0;
         NSGetSizeAndAlignment(argType, &valueSize, NULL);
         NSValue *val = [value toObjectOfClass:[NSValue class]];

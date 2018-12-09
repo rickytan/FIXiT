@@ -28,7 +28,14 @@ var FIXIT, global = this;
     enumerable: false
   });
 
-  global.proxy = function (target) {
+  global.makeProxiedFunction = function (target, method) {
+    return function () {
+      var args = Array.prototype.slice.call(arguments);
+      return _instanceCallMethod(target, method, args);
+    };
+  };
+
+  global.makeProxiedObject = function (target) {
     return new Proxy(target, {
       get: _valueForKey,
       set: _setValueForKey
