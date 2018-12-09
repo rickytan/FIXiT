@@ -32,18 +32,27 @@
       require('UIColor');\n
       var fix = Fixit.fix('RTViewController');\n
       var origin = fix.instanceMethod('locationOf:atIndex:defaultValue:', function(locations, index, point) {\n
-         this.view.backgroundColor = UIColor.redColor();\n
+         console.log(arguments);\n
+         this.view.backgroundColor = UIColor.redColor;\n
          this.button['setTitle:forState:']('test_title', 0);\n
          this.button.frame = CGRectMake(100, 200, 120, 80);\n
          if (index > locations.length - 1) {\n
-             return point.CGPointValue();\n
+             return point;\n
          }\n
-         return locations[index].CGPointValue();\n
+         var val = locations[index].CGPointValue;\n
+         console.log(val, val.__target__);\n
+         return val;\n
      });\n
       )];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        CGPoint p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 1.28)]] atIndex:2 defaultValue:CGPointMake(0.5, 1.5)];
-        NSLog(@"%@", NSStringFromCGPoint(p));
+        {
+            CGPoint p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 1.28)]] atIndex:2 defaultValue:CGPointMake(0.5, 1.5)];
+            NSLog(@"%@", NSStringFromCGPoint(p));
+        }
+        {
+            CGPoint p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 1.28)]] atIndex:0 defaultValue:CGPointMake(0.5, 1.5)];
+            NSLog(@"%@", NSStringFromCGPoint(p));
+        }
     });
 }
 
