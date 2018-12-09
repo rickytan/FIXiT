@@ -36,7 +36,7 @@
          this.button['setTitle:forState:']('test_title', 0);\n
          this.button.frame = CGRectMake(100, 200, 120, 80);\n
          if (index > locations.length - 1) {\n
-             return locations[locations.length - 1].CGPointValue();\n
+             return point.CGPointValue();\n
          }\n
          return locations[index].CGPointValue();\n
      });\n
