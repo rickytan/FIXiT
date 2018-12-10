@@ -13,6 +13,9 @@ var global = this;
     }
     return o;
   };
+  global.isNil = function (o) {
+    return o === nil;
+  };
 
   global.makeProxiedFunction = function (method) {
     return function () {
@@ -22,9 +25,7 @@ var global = this;
   };
 
   global.makeProxiedObject = function (target) {
-    if (target === undefined) {
-      return;
-    } else if (target === null) {
+    if (target === undefined || target === null) {
       target = nil;
     }
 
