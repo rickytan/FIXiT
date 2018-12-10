@@ -53,7 +53,7 @@
     if (target.isUndefined) {
         return [self __fixit_toObjectOfClass:expectedClass];
     }
-    return target.toObject;
+    return [target toObjectOfClass:expectedClass];
 }
 
 @end
