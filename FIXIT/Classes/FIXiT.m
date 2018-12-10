@@ -43,7 +43,7 @@ static id wrapObjCWithProxiedObject(id object) {
     } else if ([object isKindOfClass:[NSDate class]]) {
         return object;
     } else {
-        return [[FIXIT context].globalObject[@"makeProxiedObject"] callWithArguments:@[object ?: [NSNull null]]];
+        return [[FIXiT context].globalObject[@"makeProxiedObject"] callWithArguments:@[object ?: [NSNull null]]];
     }
 }
 
@@ -52,7 +52,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     NSParameterAssert(invocation);
 
     JSValue *function = [(id)[self class] fixit_JSFunctionForSelector:invocation.selector];
-    JSValue *proxySelf = [[FIXIT context].globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
+    JSValue *proxySelf = [[FIXiT context].globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
     JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxySelf]] callWithArguments:wrapObjCWithProxiedObject(invocation.fixit_arguments)];
     [invocation fixit_setReturnValue:returnVal];
 }
@@ -104,7 +104,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
         }
     }
 
-    [cls fixit_setJSFunction:[[FIXIT context].globalObject[@"unproxyFunction"] callWithArguments:@[block]]
+    [cls fixit_setJSFunction:[[FIXiT context].globalObject[@"unproxyFunction"] callWithArguments:@[block]]
                  forSelector:sel];
 
     return [[JSContext currentContext].globalObject[@"makeProxiedFunction"] callWithArguments:@[newSelString]];
@@ -125,21 +125,21 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
     invocation.selector = sel;
     invocation.fixit_arguments = [arguments toArray];
     [invocation invokeWithTarget:obj];
-    return [invocation fixit_returnValueInContext:[FIXIT context]];
+    return [invocation fixit_returnValueInContext:[FIXiT context]];
 }
 
-@interface FIXIT ()
+@interface FIXiT ()
 @property (nonatomic, strong) JSContext *context;
 @end
 
-@implementation FIXIT
+@implementation FIXiT
 
 + (instancetype)fix
 {
     static dispatch_once_t onceToken;
-    static FIXIT * _instance = nil;
+    static FIXiT * _instance = nil;
     dispatch_once(&onceToken, ^{
-        _instance = [FIXIT new];
+        _instance = [FIXiT new];
     });
     return _instance;
 }
