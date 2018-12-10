@@ -209,7 +209,6 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
             id object = target.isNull ? nil : target.toObject;
             SEL sel = NSSelectorFromString(key);
             if ([object respondsToSelector:sel]) {
-
                 NSMethodSignature *sig = [object methodSignatureForSelector:sel];
                 JSContext *ctx = [JSContext currentContext];
                 if (sig.numberOfArguments <= 2) {
@@ -243,7 +242,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
             }];
         };
 
-        context[@"dispatch_after"] = ^(double time, JSValue *func) {
+        context[@"dispatch_after"] = ^(NSTimeInterval time, JSValue *func) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [func callWithArguments:nil];
             });
