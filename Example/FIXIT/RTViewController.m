@@ -25,25 +25,10 @@
     self.title = @"Text VC";
 
     // Do any additional setup after loading the view, typically from a nib.
-    [[FIXIT fix] executeScript:
-     JSString
-     (\n
-      require('UIColor');\n
-      var fix = Fixit.fix('RTViewController');\n
-      var origin = fix.instanceMethod('locationOf:atIndex:defaultValue:', function(locations, index, point) {\n
-         var vc = this.navigationController.presentingViewController.title;\n
-         console.log(vc, this.title);
-         this.button().frame = CGRectMake(100, 200, 120, 80);\n
-         if (index > locations.length - 1) {\n
-             this.button['setTitle:forState:']('out of bounds', 0);\n
-             this.view.backgroundColor = UIColor.redColor;\n
-             return point;\n
-         }\n
-         this.button['setTitle:forState:']('in bounds', 0);\n
-         this.view.backgroundColor = UIColor.yellowColor;\n
-         return locations[index];\n
-     });\n
-      )];
+    NSString *script = [[NSBundle mainBundle] pathForResource:@"patch" ofType:@"js"];
+    [[FIXIT fix] executeScript:[NSString stringWithContentsOfFile:script
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:NULL]];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         {
             CGPoint p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 1.28)]] atIndex:2 defaultValue:CGPointMake(0.5, 1.5)];
