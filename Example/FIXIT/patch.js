@@ -1,7 +1,7 @@
 !(function (Fixit, require) {
   require('UIColor');
   var fix = Fixit.fix('RTViewController');
-  var origin = fix.instanceMethod('locationOf:atIndex:defaultValue:', function (locations, index, point) {
+  fix.instanceMethod('locationOf:atIndex:defaultValue:', function (locations, index, point) {
     var vc = this.navigationController.presentingViewController.title;
     console.log(vc, this.title);
     this.button().frame = CGRectMake(100, 200, 120, 80);
@@ -14,8 +14,9 @@
     this.view.backgroundColor = UIColor.yellowColor;
     return locations[index];
   });
-  Fixit.fix('NSObject').instanceMethod('crashIt', function () {
+  var originMethod = Fixit.fix('NSObject').instanceMethod('crashIt', function () {
     console.log(this);
+    originMethod.apply(this, arguments);
   });
 
 })(Fixit, require);

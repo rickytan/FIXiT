@@ -14,8 +14,8 @@
 @protocol Fixit <JSExport>
 + (instancetype)fix:(NSString *)clsName;
 - (instancetype)initWithClsName:(NSString *)clsName;
-JSExportAs(instanceMethod, - (NSString *)fixInstanceMethod:(NSString *)selName usingBlock:(JSValue *)block);
-JSExportAs(classMethod, - (NSString *)fixClassMethod:(NSString *)selName usingBlock:(JSValue *)block);
+JSExportAs(instanceMethod, - (JSValue *)fixInstanceMethod:(NSString *)selName usingBlock:(JSValue *)block);
+JSExportAs(classMethod, - (JSValue *)fixClassMethod:(NSString *)selName usingBlock:(JSValue *)block);
 
 @end
 
@@ -24,7 +24,6 @@ JSExportAs(classMethod, - (NSString *)fixClassMethod:(NSString *)selName usingBl
 @end
 
 static id wrapObjCWithProxiedObject(id object) {
-//    return object;
     if ([object isKindOfClass:[NSArray class]]) {
         NSMutableArray *arr = [NSMutableArray arrayWithCapacity:[object count]];
         [object enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -74,14 +73,14 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     return self;
 }
 
-- (NSString *)fixInstanceMethod:(NSString *)selName usingBlock:(JSValue *)block
+- (JSValue *)fixInstanceMethod:(NSString *)selName usingBlock:(JSValue *)block
 {
     Class cls = self.cls;
     SEL sel = NSSelectorFromString(selName);
     Method met = class_getInstanceMethod(cls, sel);
-    IMP imp = [cls instanceMethodForSelector:sel];
 
-    SEL newSel = NSSelectorFromString([NSString stringWithFormat:@"__fixit_%@_%p", selName, block]);
+    NSString *newSelString = [NSString stringWithFormat:@"__fixit_%@_%p", selName, block];
+    SEL newSel = NSSelectorFromString(newSelString);
     IMP forwardIMP = _objc_msgForward;
 #ifndef __arm64__
     NSMethodSignature *sig = [cls instanceMethodSignatureForSelector:sel];
@@ -106,12 +105,12 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     }
 
     [cls fixit_setJSFunction:[[FIXIT context].globalObject[@"unproxyFunction"] callWithArguments:@[block]]
-                  forSelector:sel];
+                 forSelector:sel];
 
-    return [NSString stringWithFormat:@"%p", imp];
+    return [[JSContext currentContext].globalObject[@"makeProxiedFunction"] callWithArguments:@[newSelString]];
 }
 
-- (NSString *)fixClassMethod:(NSString *)selName usingBlock:(JSValue *)block
+- (JSValue *)fixClassMethod:(NSString *)selName usingBlock:(JSValue *)block
 {
     return nil;
 }
@@ -174,10 +173,11 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
             if ([object respondsToSelector:sel]) {
 
                 NSMethodSignature *sig = [object methodSignatureForSelector:sel];
+                JSContext *ctx = [JSContext currentContext];
                 if (sig.numberOfArguments <= 2) {
-                    return [[JSContext currentContext].globalObject[@"makeProxiedObject"] callWithArguments:@[instanceCallMethod(target, key, nil) ?: [NSNull null]]];
+                    return [ctx.globalObject[@"makeProxiedObject"] callWithArguments:@[instanceCallMethod(target, key, nil) ?: [NSNull null]]];
                 } else {
-                    return [[JSContext currentContext].globalObject[@"makeProxiedFunction"] callWithArguments:@[target, key]];
+                    return [[ctx.globalObject[@"makeProxiedFunction"] callWithArguments:@[key]] invokeMethod:@"bind" withArguments:@[target]];
                 }
             } else {
                 id value = [object valueForKey:key];

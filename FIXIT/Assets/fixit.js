@@ -14,10 +14,10 @@ var global = this;
     return o;
   };
 
-  global.makeProxiedFunction = function (target, method) {
+  global.makeProxiedFunction = function (method) {
     return function () {
       var args = Array.prototype.slice.call(arguments);
-      return makeProxiedObject(_instanceCallMethod(target, method, args));
+      return makeProxiedObject(_instanceCallMethod(this, method, args));
     };
   };
 
