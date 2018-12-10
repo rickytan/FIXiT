@@ -19,11 +19,14 @@ var global = this;
   global.makeProxiedFunction = function (target, method) {
     return function () {
       var args = Array.prototype.slice.call(arguments);
-      return _instanceCallMethod(target, method, args);
+      return makeProxiedObject(_instanceCallMethod(target, method, args));
     };
   };
 
   global.makeProxiedObject = function (target) {
+    if (target === undefined) {
+      return;
+    }
     return new Proxy(target, {
       get: function (target, key) {
         if (key === '__target__') {
