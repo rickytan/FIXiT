@@ -157,7 +157,11 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
 
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[obj methodSignatureForSelector:sel]];
     invocation.selector = sel;
-    invocation.fixit_arguments = [arguments toArray];
+    NSInteger length = arguments[@"length"].toInt32;
+    for (NSInteger i = 0; i < length; ++i) {
+        [invocation fixit_setArgument:arguments[i] atIndex:i + 2];
+    }
+//    invocation.fixit_arguments = [arguments toArray];
     [invocation invokeWithTarget:obj];
     return [invocation fixit_returnValueInContext:[FIXiT context]];
 }

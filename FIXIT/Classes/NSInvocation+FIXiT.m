@@ -11,6 +11,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import "NSInvocation+FIXiT.h"
+#import "JSValue+FIXiT.h"
 
 @implementation NSInvocation (FIXiT)
 
@@ -81,6 +82,80 @@
 #undef WRAP_AND_RETURN
 }
 
+- (void)fixit_setArgument:(id)value atIndex:(NSUInteger)index
+{
+    id obj = value;
+    if ([value isKindOfClass:[JSValue class]]) {
+        JSValue *val = value;
+        if (val.isNull) {
+            obj = [NSNull null];
+        } else {
+            obj = [value toObject];
+        }
+    }
+    const char *argType = [self.methodSignature getArgumentTypeAtIndex:index];
+    // Skip const type qualifier.
+    if (argType[0] == _C_CONST) argType++;
+#define READ_ANS_SET(type, method) do { type val = [obj method]; [self setArgument:&val atIndex:(NSInteger)index]; } while (0)
+    if (strcmp(argType, @encode(id)) == 0 || strcmp(argType, @encode(Class)) == 0) {
+        __autoreleasing id returnObj = obj;
+        [self setArgument:&returnObj atIndex:(NSInteger)index];
+    } else if (strcmp(argType, @encode(SEL)) == 0) {
+        SEL selector = NSSelectorFromString(obj);
+        [self setArgument:&selector atIndex:(NSInteger)index];
+    } else if (strcmp(argType, @encode(Class)) == 0) {
+        __autoreleasing Class theClass = obj;
+        [self setArgument:&theClass atIndex:(NSInteger)index];
+        // Using this list will box the number with the appropriate constructor, instead of the generic NSValue.
+    } else if (strcmp(argType, @encode(char)) == 0) {
+        READ_ANS_SET(char, charValue);
+    } else if (strcmp(argType, @encode(int)) == 0) {
+        READ_ANS_SET(int, intValue);
+    } else if (strcmp(argType, @encode(short)) == 0) {
+        READ_ANS_SET(short, shortValue);
+    } else if (strcmp(argType, @encode(long)) == 0) {
+        READ_ANS_SET(long, longValue);
+    } else if (strcmp(argType, @encode(long long)) == 0) {
+        READ_ANS_SET(long long, longLongValue);
+    } else if (strcmp(argType, @encode(unsigned char)) == 0) {
+        READ_ANS_SET(unsigned char, unsignedCharValue);
+    } else if (strcmp(argType, @encode(unsigned int)) == 0) {
+        READ_ANS_SET(unsigned int, unsignedIntValue);
+    } else if (strcmp(argType, @encode(unsigned short)) == 0) {
+        READ_ANS_SET(unsigned short, unsignedShortValue);
+    } else if (strcmp(argType, @encode(unsigned long)) == 0) {
+        READ_ANS_SET(unsigned long, unsignedLongValue);
+    } else if (strcmp(argType, @encode(unsigned long long)) == 0) {
+        READ_ANS_SET(unsigned long long, unsignedLongLongValue);
+    } else if (strcmp(argType, @encode(float)) == 0) {
+        READ_ANS_SET(float, floatValue);
+    } else if (strcmp(argType, @encode(double)) == 0) {
+        READ_ANS_SET(double, doubleValue);
+    } else if (strcmp(argType, @encode(BOOL)) == 0) {
+        READ_ANS_SET(BOOL, boolValue);
+    } else if (strcmp(argType, @encode(bool)) == 0) {
+        READ_ANS_SET(BOOL, boolValue);
+    } else if (strcmp(argType, @encode(char *)) == 0) {
+        READ_ANS_SET(const char *, pointerValue);
+    } else if (strcmp(argType, @encode(void (^)(void))) == 0) {
+        __unsafe_unretained id block = obj;
+        [self setArgument:&block atIndex:(NSInteger)index];
+    } else {
+        NSUInteger valueSize = 0;
+        NSGetSizeAndAlignment(argType, &valueSize, NULL);
+
+        unsigned char valueBytes[valueSize];
+        if (@available(iOS 11.0, *)) {
+            [obj getValue:valueBytes size:valueSize];
+        } else {
+            // Fallback on earlier versions
+            [obj getValue:valueBytes];
+        }
+        [self setArgument:valueBytes atIndex:(NSInteger)index];
+    }
+#undef READ_ANS_SET
+}
+
 - (NSArray *)fixit_arguments {
     NSMutableArray *argumentsArray = [NSMutableArray array];
     for (NSUInteger idx = 2; idx < self.methodSignature.numberOfArguments; idx++) {
@@ -93,67 +168,7 @@
 {
     [fixit_arguments enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger index, BOOL * _Nonnull stop) {
         index = index + 2;
-        const char *argType = [self.methodSignature getArgumentTypeAtIndex:index];
-        // Skip const type qualifier.
-        if (argType[0] == _C_CONST) argType++;
-#define READ_ANS_SET(type, method) do { type val = [obj method]; [self setArgument:&val atIndex:(NSInteger)index]; } while (0)
-        if (strcmp(argType, @encode(id)) == 0 || strcmp(argType, @encode(Class)) == 0) {
-            __autoreleasing id returnObj = obj;
-            [self setArgument:&returnObj atIndex:(NSInteger)index];
-        } else if (strcmp(argType, @encode(SEL)) == 0) {
-            SEL selector = NSSelectorFromString(obj);
-            [self setArgument:&selector atIndex:(NSInteger)index];
-        } else if (strcmp(argType, @encode(Class)) == 0) {
-            __autoreleasing Class theClass = obj;
-            [self setArgument:&theClass atIndex:(NSInteger)index];
-            // Using this list will box the number with the appropriate constructor, instead of the generic NSValue.
-        } else if (strcmp(argType, @encode(char)) == 0) {
-            READ_ANS_SET(char, charValue);
-        } else if (strcmp(argType, @encode(int)) == 0) {
-            READ_ANS_SET(int, intValue);
-        } else if (strcmp(argType, @encode(short)) == 0) {
-            READ_ANS_SET(short, shortValue);
-        } else if (strcmp(argType, @encode(long)) == 0) {
-            READ_ANS_SET(long, longValue);
-        } else if (strcmp(argType, @encode(long long)) == 0) {
-            READ_ANS_SET(long long, longLongValue);
-        } else if (strcmp(argType, @encode(unsigned char)) == 0) {
-            READ_ANS_SET(unsigned char, unsignedCharValue);
-        } else if (strcmp(argType, @encode(unsigned int)) == 0) {
-            READ_ANS_SET(unsigned int, unsignedIntValue);
-        } else if (strcmp(argType, @encode(unsigned short)) == 0) {
-            READ_ANS_SET(unsigned short, unsignedShortValue);
-        } else if (strcmp(argType, @encode(unsigned long)) == 0) {
-            READ_ANS_SET(unsigned long, unsignedLongValue);
-        } else if (strcmp(argType, @encode(unsigned long long)) == 0) {
-            READ_ANS_SET(unsigned long long, unsignedLongLongValue);
-        } else if (strcmp(argType, @encode(float)) == 0) {
-            READ_ANS_SET(float, floatValue);
-        } else if (strcmp(argType, @encode(double)) == 0) {
-            READ_ANS_SET(double, doubleValue);
-        } else if (strcmp(argType, @encode(BOOL)) == 0) {
-            READ_ANS_SET(BOOL, boolValue);
-        } else if (strcmp(argType, @encode(bool)) == 0) {
-            READ_ANS_SET(BOOL, boolValue);
-        } else if (strcmp(argType, @encode(char *)) == 0) {
-            READ_ANS_SET(const char *, pointerValue);
-        } else if (strcmp(argType, @encode(void (^)(void))) == 0) {
-            __unsafe_unretained id block = obj;
-            [self setArgument:&block atIndex:(NSInteger)index];
-        } else {
-            NSUInteger valueSize = 0;
-            NSGetSizeAndAlignment(argType, &valueSize, NULL);
-
-            unsigned char valueBytes[valueSize];
-            if (@available(iOS 11.0, *)) {
-                [obj getValue:valueBytes size:valueSize];
-            } else {
-                // Fallback on earlier versions
-                [obj getValue:valueBytes];
-            }
-            [self setArgument:valueBytes atIndex:(NSInteger)index];
-        }
-#undef READ_ANS_SET
+        [self fixit_setArgument:obj atIndex:index];
     }];
 }
 
