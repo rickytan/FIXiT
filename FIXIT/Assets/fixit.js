@@ -35,15 +35,15 @@ var global = this;
       o.__target__ = target;
       return new Proxy(o, {
         get: function (target, key) {
+          var obj = target.__target__;
           if (key === '__target__') {
-            return target.__target__;
+            return obj;
           } else if (key === '__proto__') {
             return Object.prototype;
           } else if (typeof key === 'symbol') {
-            return target[key];
+            return obj[key];
           }
 
-          var obj = target.__target__;
           return _valueForKey(nilToNull(obj), key);
         },
         set: function (target, key, value) {
