@@ -6,13 +6,19 @@
 //  Copyright (c) 2018 rickytan. All rights reserved.
 //
 
+#import <FIXiT/FIXiT.h>
+
 #import "RTAppDelegate.h"
 
 @implementation RTAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    NSString *script = [[NSBundle mainBundle] pathForResource:@"patch" ofType:@"js"];
+    [[FIXiT fix] executeScript:[NSString stringWithContentsOfFile:script
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:NULL]];
+    
     return YES;
 }
 
