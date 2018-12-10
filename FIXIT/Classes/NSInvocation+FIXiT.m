@@ -234,7 +234,7 @@
 #undef WRAP_AND_RETURN
 }
 
-- (void)setFixit_returnValue:(JSValue *)value
+- (void)fixit_setReturnValue:(JSValue *)value
 {
     const char *argType = self.methodSignature.methodReturnType;
     // Skip const type qualifier.

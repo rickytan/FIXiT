@@ -16,7 +16,7 @@
   });
   var originMethod = Fixit.fix('NSObject').instanceMethod('crashIt', function () {
     console.log(this);
-    originMethod.apply(this, arguments);
+//    originMethod.apply(this, arguments);
   });
 
 })(Fixit, require);

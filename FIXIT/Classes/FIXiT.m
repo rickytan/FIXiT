@@ -54,7 +54,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     JSValue *function = [(id)[self class] fixit_JSFunctionForSelector:invocation.selector];
     JSValue *proxySelf = [[FIXIT context].globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
     JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxySelf]] callWithArguments:wrapObjCWithProxiedObject(invocation.fixit_arguments)];
-    [invocation setFixit_returnValue:returnVal];
+    [invocation fixit_setReturnValue:returnVal];
 }
 
 @implementation Fixit
@@ -160,7 +160,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
     self = [super init];
     if (self) {
         JSContext * context = [self.class context];
-        context.name = @"FIXIT";
+        context.name = @"FIXiT";
         context.exceptionHandler = ^(JSContext *context, JSValue *exception) {
             NSLog(@"%@: %@", context, exception);
         };
@@ -252,7 +252,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
         context[@"_log"] = ^() {
             NSArray *args = [JSContext currentArguments];
             for (JSValue *val in args) {
-                NSLog(@"[FIXIT]: %@", val);
+                NSLog(@"[FIXiT]: %@", val);
             }
         };
 
