@@ -167,7 +167,7 @@
     if (strcmp(argType, @encode(id)) == 0 || strcmp(argType, @encode(Class)) == 0) {
         __autoreleasing id returnObj;
         [self getReturnValue:&returnObj];
-        return [JSValue valueWithObject:returnObj inContext:context];
+        return [JSValue valueWithObject:returnObj ?: [NSNull null] inContext:context];
     } else if (strcmp(argType, @encode(SEL)) == 0) {
         SEL selector = 0;
         [self getReturnValue:&selector];
