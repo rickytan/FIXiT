@@ -206,14 +206,16 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
             id object = target.toObject;
             SEL sel = NSSelectorFromString(key);
             if ([object respondsToSelector:sel]) {
+
                 NSMethodSignature *sig = [object methodSignatureForSelector:sel];
                 if (sig.numberOfArguments <= 2) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                    id value = [object performSelector:sel];
+//                    id value = [object performSelector:sel];
 #pragma clang diagnostic pop
                     if (sig.methodReturnType[0] != _C_VOID) {
-                        return [[JSContext currentContext].globalObject[@"makeProxiedObject"] callWithArguments:@[@(value) ?: [NSNull null]]];
+//                        return [[JSContext currentContext].globalObject[@"makeProxiedObject"] callWithArguments:@[value ?: [NSNull null]]];
+                        return [[JSContext currentContext].globalObject[@"makeProxiedObject"] callWithArguments:@[instanceCallMethod(target, key, nil) ?: [NSNull null]]];
                     } else {
                         return [JSValue valueWithUndefinedInContext:[JSContext currentContext]];
                     }
