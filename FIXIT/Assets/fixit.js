@@ -26,21 +26,24 @@ var global = this;
   global.makeProxiedObject = function (target) {
     if (target === undefined) {
       return;
-    }
-    return new Proxy(target, {
-      get: function (target, key) {
-        if (key === '__target__') {
-          return target;
-        } else if (key === '__proto__') {
-          return Object.prototype;
+    } else if (target.__target__ !== undefined) {
+      return target;
+    } else {
+      return new Proxy(target, {
+        get: function (target, key) {
+          if (key === '__target__') {
+            return target;
+          } else if (key === '__proto__') {
+            return Object.prototype;
+          }
+          return _valueForKey(target, key);
+        },
+        set: _setValueForKey,
+        apply: function (target, thisArg, arguments) {
+          return this;
         }
-        return _valueForKey(target, key);
-      },
-      set: _setValueForKey,
-      apply: function (target, thisArg, arguments) {
-        return this;
-      }
-    });
+      });
+    }
   };
 
   global.unproxyFunction = function (func) {
