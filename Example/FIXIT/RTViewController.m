@@ -12,6 +12,19 @@
 
 #define JSString(code)      @#code
 
+@interface NSObject (Crash)
+- (void)crashIt;
+@end
+
+@implementation NSObject (Crash)
+
+- (void)crashIt
+{
+    NSLog(@"%@", @[][1]);
+}
+
+@end
+
 @interface RTViewController ()
 
 @end
@@ -37,6 +50,10 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             CGPoint p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 1.28)]] atIndex:0 defaultValue:CGPointMake(0.5, 1.5)];
             NSLog(@"%@", NSStringFromCGPoint(p));
+
+            [@[@1, @3, @4] crashIt];
+            [@[@"abc", @"yes"] crashIt];
+            [self crashIt];
         });
     });
 }
