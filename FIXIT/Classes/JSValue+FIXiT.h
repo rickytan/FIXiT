@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface JSValue (FIXiT)
-
+@property (nonatomic, readonly) BOOL fixit_isNil;
 @end
 
 NS_ASSUME_NONNULL_END

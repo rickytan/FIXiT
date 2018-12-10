@@ -56,4 +56,9 @@
     return [target toObjectOfClass:expectedClass];
 }
 
+- (BOOL)fixit_isNil
+{
+    return [[FIXiT context].globalObject invokeMethod:@"isNil" withArguments:@[self]].toBool;
+}
+
 @end
