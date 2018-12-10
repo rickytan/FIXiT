@@ -33,6 +33,7 @@ TODO: Add long description of the pod here.
   s.source_files = 'FIXiT/Classes/**/*'
   s.resources = 'FIXiT/Assets/*.js'
   s.public_header_files = 'FIXiT/Classes/**/FIXiT.h'
-  # s.frameworks = 'UIKit', 'MapKit'
+  s.frameworks = 'Foundation', 'JavaScriptCore'
+  s.libraries = 'c++'
   # s.dependency 'AFNetworking', '~> 2.3'
 end

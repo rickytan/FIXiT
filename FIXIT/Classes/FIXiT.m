@@ -51,7 +51,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     NSParameterAssert(self);
     NSParameterAssert(invocation);
 
-    JSValue *function = [(id)[self class] fixit_JSFunctionForSelector:invocation.selector];
+    JSValue *function = [self fixit_JSFunctionForSelector:invocation.selector];
     JSValue *proxySelf = [[FIXiT context].globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
     JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxySelf]] callWithArguments:wrapObjCWithProxiedObject(invocation.fixit_arguments)];
     [invocation fixit_setReturnValue:returnVal];
@@ -105,14 +105,48 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     }
 
     [cls fixit_setJSFunction:[[FIXiT context].globalObject[@"unproxyFunction"] callWithArguments:@[block]]
-                 forSelector:sel];
+                 forSelector:sel
+               isClassMethod:NO];
 
     return [[JSContext currentContext].globalObject[@"makeProxiedFunction"] callWithArguments:@[newSelString]];
 }
 
 - (JSValue *)fixClassMethod:(NSString *)selName usingBlock:(JSValue *)block
 {
-    return nil;
+    Class cls = self.cls;
+    SEL sel = NSSelectorFromString(selName);
+    Method met = class_getClassMethod(cls, sel);
+
+    NSString *newSelString = [NSString stringWithFormat:@"__fixit_%@_%p", selName, block];
+    SEL newSel = NSSelectorFromString(newSelString);
+    IMP forwardIMP = _objc_msgForward;
+#ifndef __arm64__
+    NSMethodSignature *sig = [cls methodSignatureForSelector:sel];
+    if ([sig.debugDescription rangeOfString:@"is special struct return? YES"].location != NSNotFound) {
+        forwardIMP = _objc_msgForward_stret;
+    }
+#endif
+
+    if (![cls respondsToSelector:newSel]) {
+        if (class_addMethod(object_getClass(cls), newSel, forwardIMP, method_getTypeEncoding(met))) {
+            method_exchangeImplementations(met, class_getClassMethod(cls, newSel));
+        }
+    }
+
+    if (class_getMethodImplementation(object_getClass(cls), @selector(forwardInvocation:)) != (IMP)__FIXIT_FORWARDING__) {
+        Method forward = class_getClassMethod(cls, @selector(forwardInvocation:));
+        const char *encoding = method_getTypeEncoding(forward);
+        IMP invokeIMP = class_replaceMethod(object_getClass(cls), @selector(forwardInvocation:), (IMP)__FIXIT_FORWARDING__, encoding);
+        if (invokeIMP) {
+            class_addMethod(object_getClass(cls), NSSelectorFromString(@"__fixit_forwardInvocation:"), invokeIMP, encoding);
+        }
+    }
+
+    [cls fixit_setJSFunction:[[FIXiT context].globalObject[@"unproxyFunction"] callWithArguments:@[block]]
+                 forSelector:sel
+               isClassMethod:YES];
+
+    return [[JSContext currentContext].globalObject[@"makeProxiedFunction"] callWithArguments:@[newSelString]];
 }
 
 @end

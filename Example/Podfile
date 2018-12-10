@@ -1,5 +1,5 @@
 platform :ios, '8.0'
-use_frameworks!
+#use_frameworks!
 target 'FIXiT_Demo' do
   pod 'FIXiT', :path => '../'
 

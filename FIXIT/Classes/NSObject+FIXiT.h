@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSObject (FIXiT)
 
-- (void)fixit_setJSFunction:(JSValue *)function forSelector:(SEL)selector;
+- (void)fixit_setJSFunction:(JSValue *)function forSelector:(SEL)selector isClassMethod:(BOOL)classMethod;
 
 - (JSValue *)fixit_JSFunctionForSelector:(SEL)selector;
 
