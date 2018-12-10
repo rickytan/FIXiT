@@ -5,11 +5,11 @@
 //  Created by ricky on 2018/12/8.
 //
 
-#import <objc/runtime.h>
 #import <objc/message.h>
 
 #import "FIXIT.h"
 #import "NSInvocation+FIXIT.h"
+#import "NSObject+FIXIT.h"
 
 @protocol Fixit <JSExport>
 + (instancetype)fix:(NSString *)clsName;
@@ -21,40 +21,6 @@ JSExportAs(classMethod, - (NSString *)fixClassMethod:(NSString *)selName usingBl
 
 @interface Fixit : NSObject <Fixit>
 @property (nonatomic, unsafe_unretained) Class cls;
-@end
-
-@interface NSObject (FIXIT)
-@property (atomic, strong, readonly) NSMutableDictionary <NSString *, JSValue *> * fixit_associatedJSValue;
-
-- (JSValue *)associatedJSValueForSelector:(SEL)selector;
-- (void)setAssociatedJSValue:(JSValue *)value forSelector:(SEL)selector;
-@end
-
-@implementation NSObject (FIXIT)
-
-- (NSMutableDictionary<NSString *, JSValue *> *)fixit_associatedJSValue
-{
-    @synchronized (self) {
-        NSMutableDictionary<NSString *, JSValue *> * dict = objc_getAssociatedObject(self, @selector(fixit_associatedJSValue));
-        if (!dict) {
-            dict = [NSMutableDictionary dictionary];
-            objc_setAssociatedObject(self, @selector(fixit_associatedJSValue), dict, OBJC_ASSOCIATION_RETAIN);
-        }
-        return dict;
-    }
-    return nil;
-}
-
-- (JSValue *)associatedJSValueForSelector:(SEL)selector
-{
-    return self.fixit_associatedJSValue[NSStringFromSelector(selector)];
-}
-
-- (void)setAssociatedJSValue:(JSValue *)value forSelector:(SEL)selector
-{
-    self.fixit_associatedJSValue[NSStringFromSelector(selector)] = value;
-}
-
 @end
 
 static id wrapObjCWithProxiedObject(id object) {
@@ -86,7 +52,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     NSParameterAssert(self);
     NSParameterAssert(invocation);
 
-    JSValue *function = [(id)[self class] associatedJSValueForSelector:invocation.selector];
+    JSValue *function = [(id)[self class] fixit_JSFunctionForSelector:invocation.selector];
     JSValue *proxySelf = [[FIXIT context].globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
     JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxySelf]] callWithArguments:wrapObjCWithProxiedObject(invocation.fixit_arguments)];
     [invocation setFixit_returnValue:returnVal];
@@ -139,7 +105,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
         }
     }
 
-    [cls setAssociatedJSValue:[[FIXIT context].globalObject[@"unproxyFunction"] callWithArguments:@[block]]
+    [cls fixit_setJSFunction:[[FIXIT context].globalObject[@"unproxyFunction"] callWithArguments:@[block]]
                   forSelector:sel];
 
     return [NSString stringWithFormat:@"%p", imp];

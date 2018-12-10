@@ -23,6 +23,7 @@
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		948C691B148063726C4C1EFD /* libPods-FIXIT_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3CA0BF8E24892FD08394E57 /* libPods-FIXIT_Tests.a */; };
+		9C0239BA21BE28BF00617F64 /* patch.js in Resources */ = {isa = PBXBuildFile; fileRef = 9C0239B921BE28BF00617F64 /* patch.js */; };
 		A6C0B2DF855089A5DEFB1973 /* libPods-FIXIT_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C8C202D49B33EB50173DA772 /* libPods-FIXIT_Example.a */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,7 @@
 		853B5AFF3145A4E3171D5A22 /* Pods-FIXIT_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9284FC269EDFF0FAF791C371 /* Pods-FIXIT_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Tests/Pods-FIXIT_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		9C0239B921BE28BF00617F64 /* patch.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = patch.js; sourceTree = "<group>"; };
 		C8C202D49B33EB50173DA772 /* libPods-FIXIT_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FIXIT_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3CA0BF8E24892FD08394E57 /* libPods-FIXIT_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FIXIT_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF1E2FC028D8B86EFA62A542 /* FIXIT.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FIXIT.podspec; path = ../FIXIT.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -140,6 +142,7 @@
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
+				9C0239B921BE28BF00617F64 /* patch.js */,
 			);
 			name = "Example for FIXIT";
 			path = FIXIT;
@@ -283,6 +286,7 @@
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
+				9C0239BA21BE28BF00617F64 /* patch.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
