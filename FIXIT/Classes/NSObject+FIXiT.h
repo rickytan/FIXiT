@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSObject (FIXIT)
+@interface NSObject (FIXiT)
 
 - (void)fixit_setJSFunction:(JSValue *)function forSelector:(SEL)selector;
 

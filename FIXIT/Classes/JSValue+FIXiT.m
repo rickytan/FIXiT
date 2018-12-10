@@ -7,10 +7,10 @@
 
 #import <objc/runtime.h>
 
-#import "FIXIT.h"
-#import "JSValue+FIXIT.h"
+#import "FIXiT.h"
+#import "JSValue+FIXiT.h"
 
-@implementation JSValue (FIXIT)
+@implementation JSValue (FIXiT)
 
 + (void)initialize
 {

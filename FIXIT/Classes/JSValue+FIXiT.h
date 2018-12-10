@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface JSValue (FIXIT)
+@interface JSValue (FIXiT)
 
 @end
 

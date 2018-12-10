@@ -10,9 +10,9 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import "NSInvocation+FIXIT.h"
+#import "NSInvocation+FIXiT.h"
 
-@implementation NSInvocation (FIXIT)
+@implementation NSInvocation (FIXiT)
 
 // Thanks to the ReactiveCocoa team for providing a generic solution for this.
 - (id)fixit_argumentAtIndex:(NSUInteger)index {

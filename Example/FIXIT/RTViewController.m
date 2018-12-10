@@ -6,7 +6,7 @@
 //  Copyright (c) 2018 rickytan. All rights reserved.
 //
 
-#import <FIXIT/FIXIT.h>
+#import <FIXiT/FIXiT.h>
 
 #import "RTViewController.h"
 

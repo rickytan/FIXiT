@@ -7,10 +7,10 @@
 
 #import <objc/runtime.h>
 
-#import "NSObject+FIXIT.h"
+#import "NSObject+FIXiT.h"
 
 
-@implementation NSObject (FIXIT)
+@implementation NSObject (FIXiT)
 
 + (NSMutableDictionary<NSString *,NSMutableDictionary<NSString *, JSValue *> *> *)fixit_classAssociatedJSFunctions
 {

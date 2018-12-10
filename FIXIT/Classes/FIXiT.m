@@ -7,9 +7,9 @@
 
 #import <objc/message.h>
 
-#import "FIXIT.h"
-#import "NSInvocation+FIXIT.h"
-#import "NSObject+FIXIT.h"
+#import "FIXiT.h"
+#import "NSInvocation+FIXiT.h"
+#import "NSObject+FIXiT.h"
 
 @protocol Fixit <JSExport>
 + (instancetype)fix:(NSString *)clsName;

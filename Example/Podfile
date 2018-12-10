@@ -1,11 +1,10 @@
 platform :ios, '8.0'
-
-target 'FIXIT_Example' do
-  pod 'FIXIT', :path => '../'
+use_frameworks!
+target 'FIXiT_Demo' do
+  pod 'FIXiT', :path => '../'
 
   target 'FIXIT_Tests' do
     inherit! :search_paths
-
     
   end
 end

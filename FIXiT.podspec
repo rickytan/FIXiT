@@ -7,9 +7,9 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = 'FIXIT'
+  s.name             = 'FIXiT'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of FIXIT.'
+  s.summary          = 'A short description of FIXiT.'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -21,19 +21,18 @@ Pod::Spec.new do |s|
 TODO: Add long description of the pod here.
                        DESC
 
-  s.homepage         = 'https://github.com/rickytan/FIXIT'
+  s.homepage         = 'https://github.com/rickytan/FIXiT'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'rickytan' => 'ricky.tan.xin@gmail.com' }
-  s.source           = { :git => 'https://github.com/rickytan/FIXIT.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/rickytan/FIXiT.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
 
-  s.source_files = 'FIXIT/Classes/**/*'
-  s.resources = 'FIXIT/Assets/*.js'
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
+  s.source_files = 'FIXiT/Classes/**/*'
+  s.resources = 'FIXiT/Assets/*.js'
+  s.public_header_files = 'FIXiT/Classes/**/FIXiT.h'
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
 end
