@@ -303,22 +303,6 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
     return self;
 }
 
-- (NSString *)_compile:(NSString *)source
-{
-    static NSRegularExpression *regex = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        regex = [NSRegularExpression regularExpressionWithPattern:@"(?<!\\\\)\\.\\s*(\\w+)\\s*\\("
-                                                          options:0
-                                                            error:NULL];
-    });
-
-    return [regex stringByReplacingMatchesInString:source
-                                           options:0
-                                             range:NSMakeRange(0, source.length)
-                                      withTemplate:@"._c(\"$1\")("];
-}
-
 - (void)executeScript:(NSString *)script
 {
     NSString *jsCode = [NSString stringWithFormat:@"!function() {\ntry {\n%@\n} catch (e) {\n    console.log(e);\n}\n}();", script];
