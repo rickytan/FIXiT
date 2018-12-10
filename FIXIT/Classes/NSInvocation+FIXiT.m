@@ -180,9 +180,18 @@
 
 #define WRAP_AND_RETURN(type, method) do { type val = 0; [self getReturnValue:&val]; return [JSValue valueWith##method:val inContext:context]; } while (0)
     if (strcmp(argType, @encode(id)) == 0 || strcmp(argType, @encode(Class)) == 0) {
-        __autoreleasing id returnObj;
-        [self getReturnValue:&returnObj];
-        return [JSValue valueWithObject:returnObj ?: [NSNull null] inContext:context];
+        if (self.selector == @selector(alloc) ||
+            self.selector == @selector(new) ||
+            self.selector == @selector(copy) ||
+            self.selector == @selector(mutableCopy)) {
+            id returnObj;
+            [self getReturnValue:&returnObj];
+            return [JSValue valueWithObject:returnObj ?: [NSNull null] inContext:context];
+        } else {
+            __autoreleasing id returnObj;
+            [self getReturnValue:&returnObj];
+            return [JSValue valueWithObject:returnObj ?: [NSNull null] inContext:context];
+        }
     } else if (strcmp(argType, @encode(SEL)) == 0) {
         SEL selector = 0;
         [self getReturnValue:&selector];
