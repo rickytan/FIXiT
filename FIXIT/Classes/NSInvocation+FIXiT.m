@@ -10,9 +10,9 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import "NSInvocation+FIXIT.h"
+#import "NSInvocation+FIXiT.h"
 
-@implementation NSInvocation (FIXIT)
+@implementation NSInvocation (FIXiT)
 
 // Thanks to the ReactiveCocoa team for providing a generic solution for this.
 - (id)fixit_argumentAtIndex:(NSUInteger)index {
@@ -91,20 +91,20 @@
 
 - (void)setFixit_arguments:(NSArray *)fixit_arguments
 {
-    [fixit_arguments enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        idx = idx + 2;
-        const char *argType = [self.methodSignature getArgumentTypeAtIndex:idx];
+    [fixit_arguments enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger index, BOOL * _Nonnull stop) {
+        index = index + 2;
+        const char *argType = [self.methodSignature getArgumentTypeAtIndex:index];
         // Skip const type qualifier.
         if (argType[0] == _C_CONST) argType++;
 #define READ_ANS_SET(type, method) do { type val = [obj method]; [self setArgument:&val atIndex:(NSInteger)index]; } while (0)
         if (strcmp(argType, @encode(id)) == 0 || strcmp(argType, @encode(Class)) == 0) {
-            __autoreleasing id returnObj;
+            __autoreleasing id returnObj = obj;
             [self setArgument:&returnObj atIndex:(NSInteger)index];
         } else if (strcmp(argType, @encode(SEL)) == 0) {
-            SEL selector = 0;
+            SEL selector = NSSelectorFromString(obj);
             [self setArgument:&selector atIndex:(NSInteger)index];
         } else if (strcmp(argType, @encode(Class)) == 0) {
-            __autoreleasing Class theClass = Nil;
+            __autoreleasing Class theClass = obj;
             [self setArgument:&theClass atIndex:(NSInteger)index];
             // Using this list will box the number with the appropriate constructor, instead of the generic NSValue.
         } else if (strcmp(argType, @encode(char)) == 0) {
@@ -138,13 +138,19 @@
         } else if (strcmp(argType, @encode(char *)) == 0) {
             READ_ANS_SET(const char *, pointerValue);
         } else if (strcmp(argType, @encode(void (^)(void))) == 0) {
-            __unsafe_unretained id block = nil;
+            __unsafe_unretained id block = obj;
             [self setArgument:&block atIndex:(NSInteger)index];
         } else {
             NSUInteger valueSize = 0;
             NSGetSizeAndAlignment(argType, &valueSize, NULL);
 
             unsigned char valueBytes[valueSize];
+            if (@available(iOS 11.0, *)) {
+                [obj getValue:valueBytes size:valueSize];
+            } else {
+                // Fallback on earlier versions
+                [obj getValue:valueBytes];
+            }
             [self setArgument:valueBytes atIndex:(NSInteger)index];
         }
 #undef READ_ANS_SET
@@ -161,7 +167,7 @@
     if (strcmp(argType, @encode(id)) == 0 || strcmp(argType, @encode(Class)) == 0) {
         __autoreleasing id returnObj;
         [self getReturnValue:&returnObj];
-        return [JSValue valueWithObject:returnObj inContext:context];
+        return [JSValue valueWithObject:returnObj ?: [NSNull null] inContext:context];
     } else if (strcmp(argType, @encode(SEL)) == 0) {
         SEL selector = 0;
         [self getReturnValue:&selector];
@@ -215,7 +221,7 @@
         __unsafe_unretained id block = nil;
         [self getArgument:&block atIndex:(NSInteger)index];
         return [JSValue valueWithObject:[block copy] inContext:context];
-    } else {
+    } else if (argType[0] != _C_VOID) {
         NSUInteger valueSize = 0;
         NSGetSizeAndAlignment(argType, &valueSize, NULL);
 
@@ -276,9 +282,9 @@
         const char * str = [[value toObject] pointerValue];
         [self setReturnValue:&str];
     } else if (strcmp(argType, @encode(void (^)(void))) == 0) {
-        __unsafe_unretained id block = nil;
+        __unsafe_unretained id block = [value toObject];
         [self setReturnValue:&block];
-    } else {
+    } else if (argType[0] != _C_VOID) {
         NSUInteger valueSize = 0;
         NSGetSizeAndAlignment(argType, &valueSize, NULL);
         NSValue *val = [value toObjectOfClass:[NSValue class]];

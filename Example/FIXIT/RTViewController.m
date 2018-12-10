@@ -6,11 +6,24 @@
 //  Copyright (c) 2018 rickytan. All rights reserved.
 //
 
-#import <FIXIT/FIXIT.h>
+#import <FIXiT/FIXiT.h>
 
 #import "RTViewController.h"
 
 #define JSString(code)      @#code
+
+@interface NSObject (Crash)
+- (void)crashIt;
+@end
+
+@implementation NSObject (Crash)
+
+- (void)crashIt
+{
+    NSLog(@"%@", @[][1]);
+}
+
+@end
 
 @interface RTViewController ()
 
@@ -25,21 +38,23 @@
     self.title = @"Text VC";
 
     // Do any additional setup after loading the view, typically from a nib.
-    [[FIXIT fix] executeScript:JSString
-     (\n
-      require('UIColor');\n
-      var fix = Fixit.fix('RTViewController');\n
-      var origin = fix.instanceMethod('locationOf:atIndex:defaultValue:', function(locations, index, point) {\n
-         this.view.backgroundColor = UIColor.redColor();\n
-         if (index > locations.length - 1) {\n
-             return locations[locations.length - 1].CGPointValue();\n
-         }\n
-         return locations[index].CGPointValue();\n
-     });\n
-      )];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        CGPoint p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 1.28)]] atIndex:2 defaultValue:CGPointMake(0.5, 1.5)];
-        NSLog(@"%@", NSStringFromCGPoint(p));
+    NSString *script = [[NSBundle mainBundle] pathForResource:@"patch" ofType:@"js"];
+    [[FIXIT fix] executeScript:[NSString stringWithContentsOfFile:script
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:NULL]];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        {
+            CGPoint p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 1.28)]] atIndex:2 defaultValue:CGPointMake(0.5, 1.5)];
+            NSLog(@"%@", NSStringFromCGPoint(p));
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            CGPoint p = [self locationOf:@[[NSValue valueWithCGPoint:CGPointMake(-0.33, 1.28)]] atIndex:0 defaultValue:CGPointMake(0.5, 1.5)];
+            NSLog(@"%@", NSStringFromCGPoint(p));
+
+            [@[@1, @3, @4] crashIt];
+            [@[@"abc", @"yes"] crashIt];
+            [self crashIt];
+        });
     });
 }
 

@@ -1,51 +1,87 @@
 var global = this;
 (function () {
-  Object.defineProperty(Object.prototype, '_c', {
-    value: function (name) {
-      if (this[name] instanceof Function) {
-        return this[name].bind(this);
-      } else {
-        return function () {
-          var args = Array.prototype.slice.call(arguments);
+  global.nil = global.Nil = Symbol('nil');
+  global.nilToNull = function (o) {
+    if (o === nil) {
+      return null;
+    }
+    return o;
+  };
+  global.nullToNil = function (o) {
+    if (o === null) {
+      return nil;
+    }
+    return o;
+  };
 
-          return _instanceCallMethod(this, name, args);
-        }.bind(this);
-      }
-    },
-    configurable: false,
-    enumerable: false
-  });
-
-  global.proxyFunction = function (target, method) {
+  global.makeProxiedFunction = function (method) {
     return function () {
       var args = Array.prototype.slice.call(arguments);
-      return _instanceCallMethod(target, method, args);
+      return makeProxiedObject(_instanceCallMethod(this, method, args));
     };
   };
 
-  var _handler = {
-    get: function (target, key) {
-      return new Proxy(_valueForKey.apply(this, arguments), _handler);
-    },
-    set: _setValueForKey
+  global.makeProxiedObject = function (target) {
+    if (target === undefined) {
+      return;
+    } else if (target === null) {
+      target = nil;
+    }
+
+    if (target.__target__ !== undefined) {
+      return target;
+    } else {
+      var o = function () {};
+      o.__target__ = target;
+      return new Proxy(o, {
+        get: function (target, key) {
+          var obj = target.__target__;
+          if (key === '__target__') {
+            return obj;
+          } else if (key === '__proto__') {
+            return Object.prototype;
+          } else if (typeof key === 'symbol') {
+            return obj[key];
+          }
+
+          return _valueForKey(nilToNull(obj), key);
+        },
+        set: function (target, key, value) {
+          _setValueForKey(target.__target__, key, value);
+        },
+        apply: function (target, thisArg, arguments) {
+          return makeProxiedObject(target.__target__);
+        }
+      });
+    }
   };
 
-  global.proxyObject = function (target) {
-    return new Proxy(target, _handler);
+  global.unproxyFunction = function (func) {
+    return function () {
+      var val = func.apply(this, arguments);
+      return unproxyObject(val);
+    };
   };
 
+  global.unproxyObject = function (obj) {
+    obj = (obj && obj.__target__) || obj;
+    return nilToNull(obj);
+  };
 
   if (global.console) {
     var jsLogger = console.log;
     global.console.log = function () {
-      global._OC_log.apply(global, arguments);
+      for (var i = 0; i < arguments.length; ++i) {
+        arguments[i] = unproxyObject(arguments[i]);
+      }
       if (jsLogger) {
         jsLogger.apply(global.console, arguments);
       }
+      global._log.apply(global, arguments);
     };
   } else {
     global.console = {
-      log: global._OC_log
+      log: global._log
     };
   }
 

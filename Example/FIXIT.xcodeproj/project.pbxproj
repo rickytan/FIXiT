@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04574099422B0EEFC02E0DAF /* Pods_FIXIT_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E21C1275C308CB0585DDFE /* Pods_FIXIT_Tests.framework */; };
+		4764C2AE870B453C22B0D21F /* Pods_FIXiT_Demo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8E48F538D6F14980B50B9CC /* Pods_FIXiT_Demo.framework */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -22,8 +24,7 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
-		948C691B148063726C4C1EFD /* libPods-FIXIT_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3CA0BF8E24892FD08394E57 /* libPods-FIXIT_Tests.a */; };
-		A6C0B2DF855089A5DEFB1973 /* libPods-FIXIT_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C8C202D49B33EB50173DA772 /* libPods-FIXIT_Example.a */; };
+		9C0239BA21BE28BF00617F64 /* patch.js in Resources */ = {isa = PBXBuildFile; fileRef = 9C0239B921BE28BF00617F64 /* patch.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,9 +40,9 @@
 /* Begin PBXFileReference section */
 		2E24CADE79D0FC022488DAE5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		2F540583587B6989DC5B79CA /* Pods-FIXIT_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Tests/Pods-FIXIT_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		3B5457119FEED7E2918959D7 /* Pods-FIXIT_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example.release.xcconfig"; sourceTree = "<group>"; };
+		42CFCFED8FC9D5E7736A9117 /* Pods-FIXiT_Demo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXiT_Demo.release.xcconfig"; path = "Pods/Target Support Files/Pods-FIXiT_Demo/Pods-FIXiT_Demo.release.xcconfig"; sourceTree = "<group>"; };
 		529CD34A045F7D00C401BF37 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		6003F58A195388D20070C39A /* FIXIT_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FIXIT_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6003F58A195388D20070C39A /* FIXiT_Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FIXiT_Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		6003F591195388D20070C39A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -61,12 +62,14 @@
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		853B5AFF3145A4E3171D5A22 /* Pods-FIXIT_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9284FC269EDFF0FAF791C371 /* Pods-FIXIT_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXIT_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-FIXIT_Tests/Pods-FIXIT_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		99E21C1275C308CB0585DDFE /* Pods_FIXIT_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FIXIT_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C0239B921BE28BF00617F64 /* patch.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = patch.js; sourceTree = "<group>"; };
+		B557B3C48D6F2FEEC5ECBA2D /* Pods-FIXiT_Demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FIXiT_Demo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FIXiT_Demo/Pods-FIXiT_Demo.debug.xcconfig"; sourceTree = "<group>"; };
 		C8C202D49B33EB50173DA772 /* libPods-FIXIT_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FIXIT_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F3CA0BF8E24892FD08394E57 /* libPods-FIXIT_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FIXIT_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF1E2FC028D8B86EFA62A542 /* FIXIT.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FIXIT.podspec; path = ../FIXIT.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		E8E48F538D6F14980B50B9CC /* Pods_FIXiT_Demo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FIXiT_Demo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF1E2FC028D8B86EFA62A542 /* FIXiT.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FIXiT.podspec; path = ../FIXiT.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +80,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				A6C0B2DF855089A5DEFB1973 /* libPods-FIXIT_Example.a in Frameworks */,
+				4764C2AE870B453C22B0D21F /* Pods_FIXiT_Demo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +91,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				948C691B148063726C4C1EFD /* libPods-FIXIT_Tests.a in Frameworks */,
+				04574099422B0EEFC02E0DAF /* Pods_FIXIT_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,7 +113,7 @@
 		6003F58B195388D20070C39A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6003F58A195388D20070C39A /* FIXIT_Example.app */,
+				6003F58A195388D20070C39A /* FIXiT_Demo.app */,
 				6003F5AE195388D20070C39A /* FIXIT_Tests.xctest */,
 			);
 			name = Products;
@@ -124,7 +127,8 @@
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
 				C8C202D49B33EB50173DA772 /* libPods-FIXIT_Example.a */,
-				F3CA0BF8E24892FD08394E57 /* libPods-FIXIT_Tests.a */,
+				99E21C1275C308CB0585DDFE /* Pods_FIXIT_Tests.framework */,
+				E8E48F538D6F14980B50B9CC /* Pods_FIXiT_Demo.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -140,6 +144,7 @@
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
+				9C0239B921BE28BF00617F64 /* patch.js */,
 			);
 			name = "Example for FIXIT";
 			path = FIXIT;
@@ -178,7 +183,7 @@
 		60FF7A9C1954A5C5007DD14C /* Podspec Metadata */ = {
 			isa = PBXGroup;
 			children = (
-				FF1E2FC028D8B86EFA62A542 /* FIXIT.podspec */,
+				FF1E2FC028D8B86EFA62A542 /* FIXiT.podspec */,
 				2E24CADE79D0FC022488DAE5 /* README.md */,
 				529CD34A045F7D00C401BF37 /* LICENSE */,
 			);
@@ -188,10 +193,10 @@
 		6386A457FDDCF6188CF1D749 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				853B5AFF3145A4E3171D5A22 /* Pods-FIXIT_Example.debug.xcconfig */,
-				3B5457119FEED7E2918959D7 /* Pods-FIXIT_Example.release.xcconfig */,
 				2F540583587B6989DC5B79CA /* Pods-FIXIT_Tests.debug.xcconfig */,
 				9284FC269EDFF0FAF791C371 /* Pods-FIXIT_Tests.release.xcconfig */,
+				B557B3C48D6F2FEEC5ECBA2D /* Pods-FIXiT_Demo.debug.xcconfig */,
+				42CFCFED8FC9D5E7736A9117 /* Pods-FIXiT_Demo.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -199,23 +204,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6003F589195388D20070C39A /* FIXIT_Example */ = {
+		6003F589195388D20070C39A /* FIXiT_Demo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "FIXIT_Example" */;
+			buildConfigurationList = 6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "FIXiT_Demo" */;
 			buildPhases = (
 				127AB609E89B30AC1E2ED479 /* [CP] Check Pods Manifest.lock */,
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
-				F9B28C827579F8633B2AD613 /* [CP] Copy Pods Resources */,
+				A6996F5E5FFFA99A7F27EB7A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = FIXIT_Example;
+			name = FIXiT_Demo;
 			productName = FIXIT;
-			productReference = 6003F58A195388D20070C39A /* FIXIT_Example.app */;
+			productReference = 6003F58A195388D20070C39A /* FIXiT_Demo.app */;
 			productType = "com.apple.product-type.application";
 		};
 		6003F5AD195388D20070C39A /* FIXIT_Tests */ = {
@@ -255,7 +260,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6003F585195388D10070C39A /* Build configuration list for PBXProject "FIXIT" */;
+			buildConfigurationList = 6003F585195388D10070C39A /* Build configuration list for PBXProject "FIXiT" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -268,7 +273,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6003F589195388D20070C39A /* FIXIT_Example */,
+				6003F589195388D20070C39A /* FIXiT_Demo */,
 				6003F5AD195388D20070C39A /* FIXIT_Tests */,
 			);
 		};
@@ -283,6 +288,7 @@
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
+				9C0239BA21BE28BF00617F64 /* patch.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,7 +318,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FIXIT_Example-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-FIXiT_Demo-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -341,7 +347,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F9B28C827579F8633B2AD613 /* [CP] Copy Pods Resources */ = {
+		A6996F5E5FFFA99A7F27EB7A /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -349,18 +355,18 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example-resources.sh",
-				"${PODS_ROOT}/../../FIXIT/Assets/fixit.js",
+				"${SRCROOT}/Pods/Target Support Files/Pods-FIXiT_Demo/Pods-FIXiT_Demo-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/FIXiT/FIXiT.framework",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fixit.js",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FIXiT.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FIXIT_Example/Pods-FIXIT_Example-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FIXiT_Demo/Pods-FIXiT_Demo-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -389,7 +395,7 @@
 /* Begin PBXTargetDependency section */
 		6003F5B4195388D20070C39A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 6003F589195388D20070C39A /* FIXIT_Example */;
+			target = 6003F589195388D20070C39A /* FIXiT_Demo */;
 			targetProxy = 6003F5B3195388D20070C39A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -523,7 +529,7 @@
 		};
 		6003F5C0195388D20070C39A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 853B5AFF3145A4E3171D5A22 /* Pods-FIXIT_Example.debug.xcconfig */;
+			baseConfigurationReference = B557B3C48D6F2FEEC5ECBA2D /* Pods-FIXiT_Demo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = JRKXNW9FRX;
@@ -539,7 +545,7 @@
 		};
 		6003F5C1195388D20070C39A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B5457119FEED7E2918959D7 /* Pods-FIXIT_Example.release.xcconfig */;
+			baseConfigurationReference = 42CFCFED8FC9D5E7736A9117 /* Pods-FIXiT_Demo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = JRKXNW9FRX;
@@ -600,7 +606,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6003F585195388D10070C39A /* Build configuration list for PBXProject "FIXIT" */ = {
+		6003F585195388D10070C39A /* Build configuration list for PBXProject "FIXiT" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6003F5BD195388D20070C39A /* Debug */,
@@ -609,7 +615,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "FIXIT_Example" */ = {
+		6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "FIXiT_Demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6003F5C0195388D20070C39A /* Debug */,

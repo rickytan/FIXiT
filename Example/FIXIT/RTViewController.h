@@ -9,5 +9,6 @@
 @import UIKit;
 
 @interface RTViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UIButton *button;
 
 @end
