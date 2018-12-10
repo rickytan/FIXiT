@@ -182,7 +182,7 @@
     if (strcmp(argType, @encode(id)) == 0 || strcmp(argType, @encode(Class)) == 0) {
         __autoreleasing id returnObj;
         [self getReturnValue:&returnObj];
-        return [JSValue valueWithObject:returnObj inContext:context];
+        return [JSValue valueWithObject:returnObj ?: [NSNull null] inContext:context];
     } else if (strcmp(argType, @encode(SEL)) == 0) {
         SEL selector = 0;
         [self getReturnValue:&selector];
@@ -190,7 +190,7 @@
     } else if (strcmp(argType, @encode(Class)) == 0) {
         __autoreleasing Class theClass = Nil;
         [self getReturnValue:&theClass];
-        return [JSValue valueWithObject:theClass inContext:context];
+        return [JSValue valueWithObject:theClass ?: [NSNull null] inContext:context];
         // Using this list will box the number with the appropriate constructor, instead of the generic NSValue.
     } else if (strcmp(argType, @encode(char)) == 0) {
         WRAP_AND_RETURN(char, Int32);
