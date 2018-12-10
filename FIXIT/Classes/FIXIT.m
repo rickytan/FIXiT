@@ -203,7 +203,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
         context[@"Fixit"] = [Fixit class];
 
         context[@"_valueForKey"] = ^(JSValue *target, NSString *key) {
-            id object = target.toObject;
+            id object = target.isNull ? nil : target.toObject;
             SEL sel = NSSelectorFromString(key);
             if ([object respondsToSelector:sel]) {
 
@@ -283,7 +283,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
             return [NSValue valueWithRange:NSMakeRange(location.toUInt32, length.toUInt32)];
         };
 
-        context[@"_OC_log"] = ^() {
+        context[@"_log"] = ^() {
             NSArray *args = [JSContext currentArguments];
             for (JSValue *val in args) {
                 NSLog(@"[FIXIT]: %@", val);

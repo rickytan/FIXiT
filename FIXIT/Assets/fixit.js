@@ -16,6 +16,20 @@ var global = this;
     enumerable: false
   });
 
+  global.nil = global.Nil = Symbol('nil');
+  global.nilToNull = function (o) {
+    if (o === nil) {
+      return null;
+    }
+    return o;
+  };
+  global.nullToNil = function (o) {
+    if (o === null) {
+      return nil;
+    }
+    return o;
+  };
+
   global.makeProxiedFunction = function (target, method) {
     return function () {
       var args = Array.prototype.slice.call(arguments);
@@ -26,21 +40,33 @@ var global = this;
   global.makeProxiedObject = function (target) {
     if (target === undefined) {
       return;
-    } else if (target.__target__ !== undefined) {
+    } else if (target === null) {
+      target = nil;
+    }
+
+    if (target.__target__ !== undefined) {
       return target;
     } else {
-      return new Proxy(target, {
+      var o = function () {};
+      o.__target__ = target;
+      return new Proxy(o, {
         get: function (target, key) {
           if (key === '__target__') {
-            return target;
+            return target.__target__;
           } else if (key === '__proto__') {
             return Object.prototype;
+          } else if (typeof key === 'symbol') {
+            return target[key];
           }
-          return _valueForKey(target, key);
+
+          var obj = target.__target__;
+          return _valueForKey(nilToNull(obj), key);
         },
-        set: _setValueForKey,
+        set: function (target, key, value) {
+          _setValueForKey(target.__target__, key, value);
+        },
         apply: function (target, thisArg, arguments) {
-          return this;
+          return makeProxiedObject(target.__target__);
         }
       });
     }
@@ -49,25 +75,32 @@ var global = this;
   global.unproxyFunction = function (func) {
     return function () {
       var val = func.apply(this, arguments);
-      console.log('called func', val);
-      return (val && val.__target__) || val;
+      return unproxyObject(val);
     };
   };
-  /*
-   if (global.console) {
-   var jsLogger = console.log;
-   global.console.log = function () {
-   global._OC_log.apply(global, arguments);
-   if (jsLogger) {
-   jsLogger.apply(global.console, arguments);
-   }
-   }
-   } else {
-   global.console = {
-   log: global._OC_log
-   }
-   }
-   */
+
+  global.unproxyObject = function (obj) {
+    obj = (obj && obj.__target__) || obj;
+    return nilToNull(obj);
+  };
+
+  if (global.console) {
+    var jsLogger = console.log;
+    global.console.log = function () {
+      for (var i = 0; i < arguments.length; ++i) {
+        arguments[i] = unproxyObject(arguments[i]);
+      }
+      if (jsLogger) {
+        jsLogger.apply(global.console, arguments);
+      }
+      global._log.apply(global, arguments);
+    };
+  } else {
+    global.console = {
+      log: global._log
+    };
+  }
+
   global.YES = true;
   global.NO = false;
 }());
