@@ -15,6 +15,11 @@ static std::map<Class, std::map<SEL, MethodPair> > _classAssociatedJSFunctions;
 
 @implementation NSObject (FIXiT)
 
+- (id)valueForUndefinedKey:(NSString *)key
+{
+    return NSStringFromClass(self.class);
+}
+
 - (void)fixit_setJSFunction:(JSValue *)function forSelector:(SEL)selector isClassMethod:(BOOL)classMethod
 {
     @synchronized (self) {
