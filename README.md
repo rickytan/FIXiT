@@ -7,7 +7,43 @@
 
 ## Example
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+OC 中定义了类型：
+```objc
+@interface NSObject (Crash)
+- (void)crashIt;
+@end
+
+@implementation NSObject (Crash)
+
+- (void)crashIt
+{
+  NSLog(@"%@", @[][1]);
+}
+
+- (CGPoint)locationOf:(NSArray <NSValue *> *)locations
+              atIndex:(NSInteger)index
+         defaultValue:(CGPoint)point
+{
+  return locations[index].CGPointValue;
+}
+
+@end
+```
+添加 JS 文件以修复：
+```javascript
+var fix = Fixit.fix('NSObject');
+fix.instanceMethod('crashIt', function () {
+  
+});
+// fix.instanceMethod 返回原实现
+var originMethod = fix.instanceMethod('locationOf:atIndex:defaultValue:', function (locations, index, point) {
+    // 此函数中的 this 就是 OC 的实例
+    if (index < locations.length) {
+        return locations[index];    // 或者调原实现 return originMethod.apply(this, arguments);
+    }
+    return point;
+});
+```
 
 ## Requirements
 
