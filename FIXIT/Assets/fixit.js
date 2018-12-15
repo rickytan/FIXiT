@@ -14,13 +14,12 @@ var global = this;
     return o;
   };
   global.isNil = function (o) {
-    return o === nil;
+    return !o || o === nil || o.__target__ === nil;
   };
 
   global.makeProxiedFunction = function (method) {
     return function () {
-      var args = Array.prototype.slice.call(arguments);
-      return makeProxiedObject(_instanceCallMethod(this, method, args));
+      return makeProxiedObject(_instanceCallMethod(this, method, arguments));
     };
   };
 
@@ -36,12 +35,11 @@ var global = this;
       o.__target__ = target;
       return new Proxy(o, {
         get: function (target, key) {
+          if (target.hasOwnProperty(key)) {
+            return target[key];
+          }
           var obj = target.__target__;
-          if (key === '__target__') {
-            return obj;
-          } else if (key === '__proto__') {
-            return Object.prototype;
-          } else if (typeof key === 'symbol') {
+          if (obj.hasOwnProperty(key)) {
             return obj[key];
           }
 
