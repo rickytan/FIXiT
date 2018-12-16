@@ -9,16 +9,11 @@
 Pod::Spec.new do |s|
   s.name             = 'FIXiT'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of FIXiT.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
+  s.summary          = 'Yet another Javascript fixing solution.'
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+A Javascript Proxy Object based hotfix solution for Objective-C. With the power
+of KVC, your may access and update Objective-C class members at runtime.
+Simple to use and integrate. You can write your js code in a more natural way.
                        DESC
 
   s.homepage         = 'https://github.com/rickytan/FIXiT'
@@ -33,5 +28,4 @@ TODO: Add long description of the pod here.
   s.public_header_files = 'FIXiT/Classes/**/FIXiT.h'
   s.frameworks = 'Foundation', 'JavaScriptCore'
   s.libraries = 'c++'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end
