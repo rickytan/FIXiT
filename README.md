@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/cocoapods/l/FIXiT.svg?style=flat)](https://cocoapods.org/pods/FIXiT)
 [![Platform](https://img.shields.io/cocoapods/p/FIXiT.svg?style=flat)](https://cocoapods.org/pods/FIXiT)
 
+## 简介
+此项目可以理解为 **JS** 版的 **[Aspect](https://github.com/steipete/Aspects)**
+
 ## 用法示例（快速入手）
 ### 修复已有方法的 Bug
 OC 中定义了类型：
