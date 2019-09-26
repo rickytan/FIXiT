@@ -89,9 +89,12 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     }
 #endif
 
-    if (![cls instancesRespondToSelector:newSel]) {
-        if (class_addMethod(cls, newSel, forwardIMP, method_getTypeEncoding(met))) {
-            method_exchangeImplementations(met, class_getInstanceMethod(cls, newSel));
+    {
+        IMP originIMP = class_replaceMethod(cls, sel, forwardIMP, method_getTypeEncoding(met)) ?: method_getImplementation(met);
+        if (originIMP) {
+            class_addMethod(cls, newSel, originIMP, method_getTypeEncoding(met));
+        } else {
+            return [JSValue valueWithObject:^() {} inContext:[JSContext currentContext]];
         }
     }
 
@@ -127,9 +130,12 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     }
 #endif
 
-    if (![cls respondsToSelector:newSel]) {
-        if (class_addMethod(object_getClass(cls), newSel, forwardIMP, method_getTypeEncoding(met))) {
-            method_exchangeImplementations(met, class_getClassMethod(cls, newSel));
+    {
+        IMP originIMP = class_replaceMethod(object_getClass(cls), sel, forwardIMP, method_getTypeEncoding(met)) ?: method_getImplementation(met);
+        if (originIMP) {
+            class_addMethod(object_getClass(cls), newSel, originIMP, method_getTypeEncoding(met));
+        } else {
+            return [JSValue valueWithObject:^() {} inContext:[JSContext currentContext]];
         }
     }
 
