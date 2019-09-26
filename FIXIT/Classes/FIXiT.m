@@ -295,7 +295,11 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
 
         _context = context;
 
-        NSString *jsPath = [[NSBundle bundleForClass:self.class] pathForResource:@"fixit" ofType:@"js"];
+        NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"FIXiT"
+                                                   withExtension:@"bundle"];
+        NSAssert(bundleURL != nil, @"can't load FIXiT.bundle");
+        NSString *jsPath = [[NSBundle bundleWithURL:bundleURL] pathForResource:@"fixit"
+                                                                        ofType:@"js"];
         NSError *error = nil;
         NSString *script = [NSString stringWithContentsOfFile:jsPath
                                                      encoding:NSUTF8StringEncoding

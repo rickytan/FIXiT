@@ -24,9 +24,7 @@ Simple to use and integrate. You can write your js code in a more natural way.
   s.ios.deployment_target = '10.0'
 
   s.source_files = 'FIXiT/Classes/**/*'
-  s.resource_bundles = {
-    'FIXiT' => ['FIXiT/Assets/*.js']
-  }
+  s.resource = 'FIXiT/Assets/FIXiT.bundle'
   s.public_header_files = 'FIXiT/Classes/**/FIXiT.h'
   s.frameworks = 'Foundation', 'JavaScriptCore'
   s.libraries = 'c++'
