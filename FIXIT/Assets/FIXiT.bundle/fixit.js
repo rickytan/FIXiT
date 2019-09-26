@@ -49,7 +49,10 @@ var global = this;
           _setValueForKey(target.__target__, key, value);
         },
         apply: function (target, thisArg, arguments) {
-          return makeProxiedObject(target.__target__.apply(thisArg, arguments));
+          if (typeof target.__target__ === 'function') {
+            return makeProxiedObject(target.__target__.apply(thisArg, arguments));
+          }
+          return makeProxiedObject(null);
         }
       });
     }
