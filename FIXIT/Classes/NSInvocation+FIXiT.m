@@ -242,9 +242,9 @@
         [self getReturnValue:&val];
         return [JSValue valueWithObject:[NSValue valueWithPointer:val] inContext:context];
     } else if (strcmp(argType, @encode(void (^)(void))) == 0) {
-        __unsafe_unretained id block = nil;
-        [self getArgument:&block atIndex:(NSInteger)index];
-        return [JSValue valueWithObject:[block copy] inContext:context];
+        __autoreleasing id block = nil;
+        [self getReturnValue:&block];
+        return [JSValue valueWithObject:[block copy] ?: [NSNull null] inContext:context];
     } else if (argType[0] != _C_VOID) {
         NSUInteger valueSize = 0;
         NSGetSizeAndAlignment(argType, &valueSize, NULL);
