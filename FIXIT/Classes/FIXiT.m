@@ -238,7 +238,8 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
             NSArray <NSString *> *clsNames = [[imports stringByReplacingOccurrencesOfString:@" " withString:@""] componentsSeparatedByString:@","];
             [clsNames enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 JSContext *ctx = [JSContext currentContext];
-                ctx.globalObject[obj] = [ctx.globalObject[@"makeProxiedObject"] callWithArguments:@[NSClassFromString(obj)]];
+                Class cls = NSClassFromString(obj);
+                ctx[obj] = [ctx[@"makeProxiedObject"] callWithArguments:@[cls]];
             }];
         };
 
