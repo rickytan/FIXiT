@@ -18,8 +18,9 @@ var global = this;
   };
 
   global.makeProxiedFunction = function (method) {
+    let selector = method;
     return function () {
-      return makeProxiedObject(_instanceCallMethod(this, method, arguments));
+      return makeProxiedObject(_instanceCallMethod(this, selector, arguments));
     };
   };
 
@@ -60,7 +61,7 @@ var global = this;
 
   global.unproxyFunction = function (func) {
     return function () {
-      var val = func.apply(this, arguments);
+      let val = func.apply(this, arguments);
       return unproxyObject(val);
     };
   };
