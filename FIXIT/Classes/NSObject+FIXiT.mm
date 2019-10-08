@@ -13,6 +13,15 @@
 typedef std::pair<JSValue *, JSValue *> MethodPair;
 static std::map<Class, std::map<SEL, MethodPair> > _classAssociatedJSFunctions;
 
+
+JSValue *fixit_JSFunctionForClassOfSelector(Class cls, SEL selector, BOOL classMethod) {
+    if (classMethod) {
+        return _classAssociatedJSFunctions[cls][selector].first;
+    } else {
+        return _classAssociatedJSFunctions[cls][selector].second;
+    }
+}
+
 @implementation NSObject (FIXiT)
 
 - (id)valueForUndefinedKey:(NSString *)key

@@ -10,6 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT JSValue *fixit_JSFunctionForClassOfSelector(Class cls, SEL selector, BOOL classMethod);
+
 @interface NSObject (FIXiT)
 
 - (void)fixit_setJSFunction:(JSValue *)function forSelector:(SEL)selector isClassMethod:(BOOL)classMethod;

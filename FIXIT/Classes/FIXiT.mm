@@ -6,10 +6,13 @@
 //
 
 #import <objc/message.h>
+#include <stack>
 
 #import "FIXiT.h"
 #import "NSInvocation+FIXiT.h"
 #import "NSObject+FIXiT.h"
+
+#define FIXIT_LOG(format, ...)      NSLog(@"[FIXiT]: " format, __VA_ARGS__)
 
 @protocol Fixit <JSExport>
 + (instancetype)fix:(NSString *)clsName;
@@ -47,14 +50,31 @@ static id wrapObjCWithProxiedObject(id object) {
     }
 }
 
+using namespace std;
+
+static stack<pair<NSInvocation *, Class> > callStack;
+
 static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvocation *invocation) {
     NSParameterAssert(self);
     NSParameterAssert(invocation);
 
-    JSValue *function = [self fixit_JSFunctionForSelector:invocation.selector];
+    Class cls = [self class];
+    if (!callStack.empty()) {
+        pair<NSInvocation *, Class> p = callStack.top();
+        NSInvocation *lastInvocation = p.first;
+        if ([lastInvocation.target isEqual:invocation.target] &&
+            lastInvocation.selector == invocation.selector) {
+            cls = [p.second superclass];
+        }
+    }
+    callStack.push(pair<NSInvocation *, Class>(invocation, cls));
+    
+    JSValue *function = fixit_JSFunctionForClassOfSelector(cls ?: [self class], invocation.selector, NO);
     JSValue *proxySelf = [[FIXiT context].globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
     JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxySelf]] callWithArguments:wrapObjCWithProxiedObject(invocation.fixit_arguments)];
     [invocation fixit_setReturnValue:returnVal];
+    
+    callStack.pop();
 }
 
 @implementation Fixit
@@ -69,6 +89,9 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     self = [super init];
     if (self) {
         self.cls = NSClassFromString(clsName);
+        if (!self.cls) {
+            FIXIT_LOG(@"Class %@ doesn't exists!", clsName);
+        }
     }
     return self;
 }
@@ -79,7 +102,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     SEL sel = NSSelectorFromString(selName);
     Method met = class_getInstanceMethod(cls, sel);
 
-    NSString *newSelString = [NSString stringWithFormat:@"__fixit_%@_%p", selName, block];
+    NSString *newSelString = [NSString stringWithFormat:@"__fixit_%@_%@_%p", cls, selName, block];
     SEL newSel = NSSelectorFromString(newSelString);
     IMP forwardIMP = _objc_msgForward;
 #ifndef __arm64__
@@ -120,7 +143,7 @@ static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvoca
     SEL sel = NSSelectorFromString(selName);
     Method met = class_getClassMethod(cls, sel);
 
-    NSString *newSelString = [NSString stringWithFormat:@"__fixit_%@_%p", selName, block];
+    NSString *newSelString = [NSString stringWithFormat:@"__fixit_%@_%@_%p", cls, selName, block];
     SEL newSel = NSSelectorFromString(newSelString);
     IMP forwardIMP = _objc_msgForward;
 #ifndef __arm64__
@@ -245,7 +268,11 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
             [clsNames enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 JSContext *ctx = [JSContext currentContext];
                 Class cls = NSClassFromString(obj);
-                ctx[obj] = [ctx[@"makeProxiedObject"] callWithArguments:@[cls]];
+                if (cls) {
+                    ctx[obj] = [ctx[@"makeProxiedObject"] callWithArguments:@[cls]];
+                } else {
+                    FIXIT_LOG(@"Class %@ doesn't exists!", obj);
+                }
             }];
         };
 
@@ -296,7 +323,7 @@ static JSValue * instanceCallMethod(JSValue *instance, NSString *selName, JSValu
         context[@"_log"] = ^() {
             NSArray *args = [JSContext currentArguments];
             for (JSValue *val in args) {
-                NSLog(@"[FIXiT]: %@", val);
+                FIXIT_LOG(@"%@", val);
             }
         };
 
