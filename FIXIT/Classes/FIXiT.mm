@@ -6,7 +6,6 @@
 //
 
 #import <objc/message.h>
-#include <stack>
 
 #import "FIXiT.h"
 #import "NSInvocation+FIXiT.h"
@@ -50,31 +49,14 @@ static id wrapObjCWithProxiedObject(id object) {
     }
 }
 
-using namespace std;
-
-static stack<pair<NSInvocation *, Class> > callStack;
-
 static void __FIXIT_FORWARDING__(__unsafe_unretained id self, SEL _cmd, NSInvocation *invocation) {
     NSParameterAssert(self);
     NSParameterAssert(invocation);
 
-    Class cls = [self class];
-    if (!callStack.empty()) {
-        pair<NSInvocation *, Class> p = callStack.top();
-        NSInvocation *lastInvocation = p.first;
-        if ([lastInvocation.target isEqual:invocation.target] &&
-            lastInvocation.selector == invocation.selector) {
-            cls = [p.second superclass];
-        }
-    }
-    callStack.push(pair<NSInvocation *, Class>(invocation, cls));
-    
-    JSValue *function = fixit_JSFunctionForClassOfSelector(cls ?: [self class], invocation.selector, NO);
+    JSValue *function = [self fixit_JSFunctionForSelector:invocation.selector];
     JSValue *proxySelf = [[FIXiT context].globalObject[@"makeProxiedObject"] callWithArguments:@[self]];
     JSValue *returnVal = [[function invokeMethod:@"bind" withArguments:@[proxySelf]] callWithArguments:wrapObjCWithProxiedObject(invocation.fixit_arguments)];
     [invocation fixit_setReturnValue:returnVal];
-    
-    callStack.pop();
 }
 
 @implementation Fixit
