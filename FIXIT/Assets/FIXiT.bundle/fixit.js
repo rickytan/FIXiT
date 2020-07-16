@@ -1,6 +1,6 @@
 var global = this;
 (function () {
-  global.nil = global.Nil = Symbol('nil');
+  global.nil = global.Nil = Symbol("nil");
   global.nilToNull = function (o) {
     if (o === nil) {
       return null;
@@ -17,9 +17,36 @@ var global = this;
     return !o || o === nil || o.__target__ === nil;
   };
 
+  function isObject(obj) {
+    let type = typeof obj;
+    return type === "function" || (type === "object" && !!obj);
+  }
+  function replaceProxy(obj) {
+    if (obj.__target__) {
+      return obj.__target__;
+    } else if (Array.isArray(obj)) {
+      return obj.map(function (v) {
+        return replaceProxy(v);
+      });
+    } else if (isObject(obj)) {
+      var o = Object.create({});
+      for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+          o[p] = replaceProxy(obj[p]);
+        }
+      }
+      return o;
+    } else {
+      return obj;
+    }
+  }
+
   global.makeProxiedFunction = function (method) {
     let selector = method;
     return function () {
+      for (var i = 0; i < arguments.length; ++i) {
+        arguments[i] = replaceProxy(arguments[i]);
+      }
       return makeProxiedObject(_instanceCallMethod(this, selector, arguments));
     };
   };
@@ -47,14 +74,16 @@ var global = this;
           return _valueForKey(nilToNull(obj), key);
         },
         set: function (target, key, value) {
-          _setValueForKey(target.__target__, key, value);
+          _setValueForKey(target.__target__, key, replaceProxy(value));
         },
         apply: function (target, thisArg, arguments) {
-          if (typeof target.__target__ === 'function') {
-            return makeProxiedObject(target.__target__.apply(thisArg, arguments));
+          if (typeof target.__target__ === "function") {
+            return makeProxiedObject(
+              target.__target__.apply(thisArg, arguments)
+            );
           }
           return makeProxiedObject(null);
-        }
+        },
       });
     }
   };
@@ -84,10 +113,10 @@ var global = this;
     };
   } else {
     global.console = {
-      log: global._log
+      log: global._log,
     };
   }
 
   global.YES = true;
   global.NO = false;
-}());
+})();
