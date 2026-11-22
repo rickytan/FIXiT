@@ -14,7 +14,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Validate package manifest
         run: swift package describe
@@ -32,9 +32,10 @@ jobs:
 
       - name: Test Swift package
         run: |
-          mkdir -p "$RUNNER_TEMP/FIXiTPackage"
-          cp -R Package.swift FIXIT Tests "$RUNNER_TEMP/FIXiTPackage/"
-          cd "$RUNNER_TEMP/FIXiTPackage"
+          mkdir -p "$RUNNER_TEMP/FIXiT"
+          cp -R Package.swift FIXIT Tests "$RUNNER_TEMP/FIXiT/"
+          cd "$RUNNER_TEMP/FIXiT"
+          xcodebuild -list
           xcodebuild test \
             -scheme FIXiT-Package \
             -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.id }}" \
@@ -42,6 +43,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Test app integration
+        if: ${{ !cancelled() && steps.simulator.outputs.id != '' }}
         run: |
           xcodebuild test \
             -project Tests/SwiftPackageHost/FIXiTPackageHost.xcodeproj \
@@ -51,6 +53,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Build for iOS devices
+        if: ${{ !cancelled() && steps.simulator.outputs.id != '' }}
         run: |
           xcodebuild build \
             -project Tests/SwiftPackageHost/FIXiTPackageHost.xcodeproj \
