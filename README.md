@@ -134,12 +134,23 @@ set -eu
   "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FIXiT.bundle"
 ```
 
-Set the phase's input file to
-`$(BUILT_PRODUCTS_DIR)/FIXiT_FIXiT.bundle/FIXiT.bundle` and its output file to
-`$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle`. This
-keeps the copied resource in sync with the selected package version and works
-with Xcode's user-script sandbox. The script phase is required; without it,
-FIXiT cannot find its JavaScript at runtime.
+Add both the directory and its JavaScript file to the phase's input files:
+
+```
+$(BUILT_PRODUCTS_DIR)/FIXiT_FIXiT.bundle/FIXiT.bundle
+$(BUILT_PRODUCTS_DIR)/FIXiT_FIXiT.bundle/FIXiT.bundle/fixit.js
+```
+
+Add both the destination directory and file to its output files:
+
+```
+$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle
+$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle/fixit.js
+```
+
+The explicit file paths allow Xcode's user-script sandbox to copy the resource.
+The script phase is required; without it, FIXiT cannot find its JavaScript at
+runtime.
 
 ### CocoaPods
 

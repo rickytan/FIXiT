@@ -37,7 +37,7 @@ jobs:
           cd "$RUNNER_TEMP/FIXiT"
           xcodebuild -list
           xcodebuild test \
-            -scheme FIXiT-Package \
+            -scheme FIXiT \
             -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.id }}" \
             -derivedDataPath "$RUNNER_TEMP/FIXiTPackageBuild" \
             CODE_SIGNING_ALLOWED=NO

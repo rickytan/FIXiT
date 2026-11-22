@@ -143,9 +143,15 @@
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = ();
-			inputPaths = ("$(BUILT_PRODUCTS_DIR)/FIXiT_FIXiT.bundle/FIXiT.bundle",);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/FIXiT_FIXiT.bundle/FIXiT.bundle",
+				"$(BUILT_PRODUCTS_DIR)/FIXiT_FIXiT.bundle/FIXiT.bundle/fixit.js",
+			);
 			name = "Copy FIXiT Resources";
-			outputPaths = ("$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle",);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle/fixit.js",
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -eu\n/usr/bin/ditto \\\n  \"${BUILT_PRODUCTS_DIR}/FIXiT_FIXiT.bundle/FIXiT.bundle\" \\\n  \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FIXiT.bundle\"\n";
@@ -167,6 +173,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
