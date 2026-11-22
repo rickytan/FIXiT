@@ -1,6 +1,6 @@
 # FIXiT
 
-[![CI Status](https://img.shields.io/travis/rickytan/FIXiT.svg?style=flat)](https://travis-ci.org/rickytan/FIXiT)
+[![Swift Package](https://github.com/rickytan/FIXiT/actions/workflows/swift-package.yml/badge.svg)](https://github.com/rickytan/FIXiT/actions/workflows/swift-package.yml)
 [![Version](https://img.shields.io/cocoapods/v/FIXiT.svg?style=flat)](https://cocoapods.org/pods/FIXiT)
 [![License](https://img.shields.io/cocoapods/l/FIXiT.svg?style=flat)](https://cocoapods.org/pods/FIXiT)
 [![Platform](https://img.shields.io/cocoapods/p/FIXiT.svg?style=flat)](https://cocoapods.org/pods/FIXiT)
@@ -95,10 +95,53 @@ var originViewDidLoad = fix.instanceMethod('viewDidLoad', function () {
 
 ## Requirements
 
-* Xcode 9+
+* Xcode 9+ (Xcode 12+ for Swift Package Manager)
 * iOS 10+
 
 ## Installation
+
+### Swift Package Manager
+
+In Xcode, choose **File > Add Package Dependencies** and enter
+`https://github.com/rickytan/FIXiT.git`. Select the `master` branch until a
+release containing the Swift package is available, then add the `FIXiT`
+product to your iOS target.
+
+For a package manifest:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/rickytan/FIXiT.git", .branch("master"))
+],
+targets: [
+    .target(name: "YourTarget", dependencies: [
+        .product(name: "FIXiT", package: "FIXiT")
+    ])
+]
+```
+
+Import the library with `import FIXiT` in Swift or `@import FIXiT;` in
+Objective-C.
+
+FIXiT loads `FIXiT.bundle` from the main app bundle. Swift Package Manager puts
+it inside its own resource bundle, so add a **Run Script** phase to the app
+target after **Copy Bundle Resources**:
+
+```sh
+set -eu
+/usr/bin/ditto \
+  "${BUILT_PRODUCTS_DIR}/FIXiT_FIXiT.bundle/FIXiT.bundle" \
+  "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FIXiT.bundle"
+```
+
+Set the phase's input file to
+`$(BUILT_PRODUCTS_DIR)/FIXiT_FIXiT.bundle/FIXiT.bundle` and its output file to
+`$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle`. This
+keeps the copied resource in sync with the selected package version and works
+with Xcode's user-script sandbox. The script phase is required; without it,
+FIXiT cannot find its JavaScript at runtime.
+
+### CocoaPods
 
 FIXiT is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
