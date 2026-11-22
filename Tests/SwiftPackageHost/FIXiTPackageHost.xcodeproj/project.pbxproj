@@ -154,7 +154,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -eu\n/usr/bin/ditto \\\n  \"${BUILT_PRODUCTS_DIR}/FIXiT_FIXiT.bundle/FIXiT.bundle\" \\\n  \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FIXiT.bundle\"\n";
+			shellScript = "set -eu\ndestination=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FIXiT.bundle\"\n/bin/mkdir -p \"$destination\"\n/bin/cat \"${BUILT_PRODUCTS_DIR}/FIXiT_FIXiT.bundle/FIXiT.bundle/fixit.js\" > \"$destination/fixit.js\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

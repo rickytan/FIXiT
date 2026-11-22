@@ -129,9 +129,9 @@ target after **Copy Bundle Resources**:
 
 ```sh
 set -eu
-/usr/bin/ditto \
-  "${BUILT_PRODUCTS_DIR}/FIXiT_FIXiT.bundle/FIXiT.bundle" \
-  "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FIXiT.bundle"
+destination="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FIXiT.bundle"
+/bin/mkdir -p "$destination"
+/bin/cat "${BUILT_PRODUCTS_DIR}/FIXiT_FIXiT.bundle/FIXiT.bundle/fixit.js" > "$destination/fixit.js"
 ```
 
 Add both the directory and its JavaScript file to the phase's input files:
@@ -148,9 +148,9 @@ $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle
 $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/FIXiT.bundle/fixit.js
 ```
 
-The explicit file paths allow Xcode's user-script sandbox to copy the resource.
-The script phase is required; without it, FIXiT cannot find its JavaScript at
-runtime.
+The explicit file paths allow Xcode's user-script sandbox to copy the resource
+without temporary files. The script phase is required; without it, FIXiT cannot
+find its JavaScript at runtime.
 
 ### CocoaPods
 
